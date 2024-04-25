@@ -21,7 +21,7 @@ public class HeroKnight : MonoBehaviour {
     private bool                m_rolling = false;
     private int                 m_facingDirection = 1;
     private int                 m_currentAttack = 0;
-    private float               m_timeSinceAttack = 0.0f;
+    public float               m_timeSinceAttack = 0.0f;
     private float               m_delayToIdle = 0.0f;
     private float               m_rollDuration = 8.0f / 14.0f;
     private float               m_rollCurrentTime;
@@ -42,8 +42,12 @@ public class HeroKnight : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
-        // Increase timer that controls attack combo
-        m_timeSinceAttack += Time.deltaTime;
+        if (m_timeSinceAttack < 2)
+        {
+            // Increase timer that controls attack combo
+            m_timeSinceAttack += Time.deltaTime;
+        }
+        
 
         // Increase timer that checks roll duration
         if(m_rolling)
