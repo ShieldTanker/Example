@@ -2,6 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+public enum BattleState
+{
+    Idle,
+    Attacking,
+    Guard,
+}
 public class PlayerBattle : MonoBehaviour
 {
     public Animator playerAnim;
@@ -11,58 +18,100 @@ public class PlayerBattle : MonoBehaviour
 
     public float attackTime;
     public float farryTime;
+    public float waitActiveTime;
 
-    int attackCount = 0;
+    private BattleState battleState;
+    private int attackCombo = 0;
+    private float attackTimeCount = 0f;
 
-    float atInputTime = 0f;
-    public float waitAttackTime;
-    public float reAtTime;
-
-    IEnumerator Attack(string animation)
-    {
-        playerAnim.SetTrigger(animation);
-        playerAnim.SetBool("isAttacking", true);
-        
-        attackPoint.SetActive(true);
-        yield return new WaitForSeconds(attackTime);
-        attackPoint.SetActive(false);
-    }
+    public float resetComboTime;
+    public float delayAttackTime;
 
     
+
     private void Update()
+    {
+        KeyInput();
+        Attack();
+        //Guard();
+    }
+
+    public void KeyInput()
     {
         if (Input.GetButtonDown("Fire1"))
         {
-            if (attackCount == 0)
-            {
-                StartCoroutine(Attack("isAttack1"));
-                ++attackCount;
-                atInputTime = waitAttackTime;
-            }
-            else if (attackCount == 1)
-            {
-                StartCoroutine(Attack("isAttack2"));
-                ++attackCount;
-                atInputTime = waitAttackTime;
-            }
-            else if (attackCount == 2)
-            {
-                StartCoroutine(Attack("isAttack3"));
-                ++attackCount;
-                atInputTime = reAtTime;
-            }
+            battleState = BattleState.Attacking;
         }
 
-        if (attackCount > 0)
+        else if (Input.GetKeyDown(KeyCode.Mouse1))
         {
-            atInputTime -= Time.deltaTime;
+            battleState = BattleState.Guard;
+            guardPoint.SetActive(true);
 
-            if (atInputTime <= 0)
-            {
-                attackCount = 0;
-                playerAnim.SetBool("isAttacking", false);
-            }
+            playerAnim.SetTrigger("isGuard");
+            playerAnim.SetBool("idleGuard", true);
         }
-        
+        else if (Input.GetKeyUp(KeyCode.Mouse1))
+        {
+            battleState = BattleState.Idle;
+            guardPoint.SetActive(false);
+            playerAnim.SetBool("idleGuard", false);
+        }
     }
+
+    public void Attack()
+    {
+        if (battleState == BattleState.Attacking && attackTimeCount > delayAttackTime)
+        {
+            attackCombo++;
+
+            if (attackCombo > 2)
+            {
+                attackCombo = 1;
+                battleState = BattleState.Idle;
+                attackTimeCount = 0;
+            }
+
+            StartCoroutine(AttackCoroutine("isAttack" + attackCombo));
+            attackTimeCount = 0;
+            battleState = BattleState.Idle;
+        }
+
+        if (attackTimeCount < resetComboTime)
+            attackTimeCount += Time.deltaTime;
+        else
+        {
+            attackCombo = 0;
+            attackTimeCount = 0;
+
+            battleState = BattleState.Idle;
+        }
+    }
+    /*public void Guard()
+    {
+        if (battleState == BattleState.Guard)
+        {
+            
+        }
+        else
+        {
+            
+        }
+    }*/
+
+    IEnumerator AttackCoroutine(string animation)
+    {
+        battleState = BattleState.Attacking;
+
+        playerAnim.SetTrigger(animation);
+
+        yield return new WaitForSeconds(waitActiveTime);
+
+        attackPoint.SetActive(true);
+        
+        yield return new WaitForSeconds(attackTime);
+
+        attackPoint.SetActive(false);
+    }
+    
 }

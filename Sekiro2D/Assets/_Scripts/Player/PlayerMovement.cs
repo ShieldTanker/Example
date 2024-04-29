@@ -8,14 +8,17 @@ public class PlayerMovement : MonoBehaviour
     public Animator playerAnim;
 
     // 움직임
+    Rigidbody2D rb;
     public float jumpForce;
     public float moveSpeed;
-    Rigidbody2D rb;
+    private float moveX;
+    private bool jumpInput;
     
     // 지형 체크
     public LayerMask grdCheckLayerMask;
     public Transform grdCheckPoint;
     private bool grounded;
+
 
     private void Start()
     {
@@ -26,39 +29,44 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         GroundCheck();
+        KeyInput();
         PlayerMove();
-        PlayerJump(grounded);
-        PlayerActionSignal();
-    }
-
-    void PlayerActionSignal()
-    {
-        if (Input.GetButton("Horizontal"))
-        {
-            playerAnim.SetBool("isMove", true);
-        }
-        else
-            playerAnim.SetBool("isMove", false);
     }
 
     void PlayerMove()
     {
-        float inputX = Input.GetAxisRaw("Horizontal");
-        float moveX = transform.position.x + inputX * moveSpeed * Time.deltaTime;
         transform.position = new Vector2(moveX, transform.position.y);
+
+        if (jumpInput && grounded)
+            rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
     }
 
     public void GroundCheck()
     {
         grounded = Physics2D.OverlapCircle(grdCheckPoint.position, 0.1f, grdCheckLayerMask);
         playerAnim.SetBool("isGround", grounded);
+        playerAnim.SetBool("isJump", false);
     }
 
-    void PlayerJump(bool grounded)
+    
+    public void KeyInput()
     {
-        if (Input.GetKeyDown(KeyCode.Space) &&  grounded)
+        if (Input.GetButton("Horizontal"))
         {
-            rb.AddForce(Vector3.up * jumpForce , ForceMode2D.Impulse);
+            playerAnim.SetBool("isMove", true);
+
+            float inputX = Input.GetAxisRaw("Horizontal");
+            moveX = transform.position.x + inputX * moveSpeed * Time.deltaTime;
         }
+        else
+            playerAnim.SetBool("isMove", false);
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            jumpInput = true;
+            playerAnim.SetBool("isJump", jumpInput);
+        }
+        else
+            jumpInput = false;
     }
 }
