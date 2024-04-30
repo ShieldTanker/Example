@@ -22,6 +22,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
+        moveX = transform.position.x;
         rb = GetComponent<Rigidbody2D>();
         playerAnim = GetComponent<Animator>();
     }
@@ -69,4 +70,5 @@ public class PlayerMovement : MonoBehaviour
         else
             jumpInput = false;
     }
+
 }

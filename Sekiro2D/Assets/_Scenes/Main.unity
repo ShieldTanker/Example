@@ -200,8 +200,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 71504543}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.634, y: 0.869, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0.945, y: 0.912, z: 0}
+  m_LocalScale: {x: 1.25, y: 1.9051561, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 708332690}
@@ -317,7 +317,7 @@ GameObject:
   - component: {fileID: 668341857}
   - component: {fileID: 668341859}
   - component: {fileID: 668341858}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
@@ -387,10 +387,10 @@ GameObject:
   m_Component:
   - component: {fileID: 708332690}
   - component: {fileID: 708332689}
-  - component: {fileID: 708332688}
-  - component: {fileID: 708332687}
   - component: {fileID: 708332686}
   - component: {fileID: 708332685}
+  - component: {fileID: 708332688}
+  - component: {fileID: 708332687}
   - component: {fileID: 708332691}
   m_Layer: 0
   m_Name: Player
@@ -412,7 +412,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerAnim: {fileID: 708332691}
-  jumpForce: 5
+  jumpForce: 8
   moveSpeed: 10
   grdCheckLayerMask:
     serializedVersion: 2
@@ -431,13 +431,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerAnim: {fileID: 708332691}
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 128
   attackPoint: {fileID: 71504543}
-  guardPoint: {fileID: 1422850452}
-  attackTime: 0.3
-  farryTime: 0
-  waitActiveTime: 0.4
+  farryTime: 2
   resetComboTime: 1.4
   delayAttackTime: 0.8
+  guardPoint: {fileID: 1422850452}
+  boxSize: {x: 2.5, y: 2}
+  chkEnemyAttack: 0
+  isFarrying: 0
+  resetFarryTime: 2
+  farryInTime: 0.2
+  playerHp: 0
 --- !u!50 &708332687
 Rigidbody2D:
   serializedVersion: 4
@@ -577,7 +584,7 @@ GameObject:
   - component: {fileID: 1225171967}
   - component: {fileID: 1225171966}
   - component: {fileID: 1225171965}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WarriorEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -682,6 +689,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1422850454}
   - component: {fileID: 1422850453}
+  - component: {fileID: 1422850455}
   m_Layer: 0
   m_Name: GuardPoint
   m_TagString: Untagged
@@ -749,13 +757,26 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1422850452}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.634, y: 0.869, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0.816, y: 1, z: 0}
+  m_LocalScale: {x: 2.4801564, y: 1.975, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 708332690}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1422850455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1422850452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5d6b9f89bf4ba1468d39863c6026dce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerPos: {fileID: 708332690}
 --- !u!1 &1516797399
 GameObject:
   m_ObjectHideFlags: 0
