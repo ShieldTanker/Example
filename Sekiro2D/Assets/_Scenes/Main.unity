@@ -360,7 +360,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 4
+  m_Constraints: 7
 --- !u!70 &668341859
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -436,8 +436,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   attackPoint: {fileID: 71504543}
-  resetComboTime: 1.2
-  delayAttackTime: 0.8
+  resetComboTime: 0.8
+  delayAttackTime: 0.7
   attackTimeCount: 0
   guardPoint: {fileID: 1422850452}
   boxSize: {x: 2.5, y: 2}

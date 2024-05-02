@@ -18,14 +18,15 @@ public class PlayerBattle : MonoBehaviour
 
     //플레이어 상태
     public static PlayerBattleState playerBattleState;
+    bool isGround;
 
     // 공격
     public GameObject attackPoint;
     public float resetComboTime;
     public float delayAttackTime;
     public float attackTimeCount;
+    public static int attackCombo = 0;
     private bool isAttack;
-    private int attackCombo = 0;
 
     // 방어
     public GameObject guardPoint;
@@ -34,7 +35,7 @@ public class PlayerBattle : MonoBehaviour
     public bool inputGuard;
     private bool checkGuard = false;
 
-    private int farryCount;
+    public static int farryCount;
     public float resetFarryTime;
     public float farryTime;
 
@@ -45,6 +46,7 @@ public class PlayerBattle : MonoBehaviour
 
     private void Update()
     {
+        // isGround = PlayerMovement.grounded;
         KeyInput();
         Attack();
         Guard();
@@ -53,7 +55,7 @@ public class PlayerBattle : MonoBehaviour
     public void KeyInput()
     {
         // 공격
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetKeyDown(KeyCode.Mouse0) && PlayerMovement.grounded)
         {
             Debug.Log("어택");
             isAttack = true;
@@ -144,9 +146,7 @@ public class PlayerBattle : MonoBehaviour
                 checkGuard = false;
 
                 playerBattleState = PlayerBattleState.Guard;
-                Debug.Log(playerBattleState);
-
-                playerAnim.SetTrigger("isGuard");
+                   playerAnim.SetTrigger("isGuard");
                 playerAnim.SetBool("idleGuard", true);
             }
         }

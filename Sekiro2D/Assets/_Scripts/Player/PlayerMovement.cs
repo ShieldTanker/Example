@@ -3,6 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+enum PlayerMoveState
+{
+    Idle,
+    Move,
+    Jump,
+
+}
+
 public class PlayerMovement : MonoBehaviour
 {
 
@@ -10,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
 
     // 플레이어 상태
     public PlayerBattleState pBState;
+    PlayerMoveState plMove;
 
     // 움직임
     Rigidbody2D rb;
@@ -21,7 +30,7 @@ public class PlayerMovement : MonoBehaviour
     // 지형 체크
     public LayerMask grdCheckLayerMask;
     public Transform grdCheckPoint;
-    private bool grounded;
+    public static bool grounded;
 
 
     private void Start()
@@ -37,6 +46,7 @@ public class PlayerMovement : MonoBehaviour
         GroundCheck();
         KeyInput();
         PlayerMove();
+        PlayerMoveUpdate(plMove);
     }
 
     void PlayerMove()
@@ -62,21 +72,40 @@ public class PlayerMovement : MonoBehaviour
         {
             if (Input.GetButton("Horizontal"))
             {
-                playerAnim.SetBool("isMove", true);
+                plMove = PlayerMoveState.Move;
 
                 float inputX = Input.GetAxisRaw("Horizontal");
                 moveX = transform.position.x + inputX * moveSpeed * Time.deltaTime;
+
             }
             else
-                playerAnim.SetBool("isMove", false);
+                plMove = PlayerMoveState.Idle;
 
             if (Input.GetKeyDown(KeyCode.Space) && grounded)
             {
                 jumpInput = true;
-                playerAnim.SetTrigger("isJump");
+                plMove = PlayerMoveState.Jump;
             }
             else
                 jumpInput = false;
+        }
+    }
+
+    private void PlayerMoveUpdate(PlayerMoveState plMove)
+    {
+        switch (plMove)
+        {
+            case PlayerMoveState.Idle:
+                playerAnim.SetBool("isMove", false);
+                break;
+            case PlayerMoveState.Move:
+                playerAnim.SetBool("isMove", true);
+                break;
+            case PlayerMoveState.Jump:
+                playerAnim.SetTrigger("isJump");
+                break;
+            default:
+                break;
         }
     }
 
