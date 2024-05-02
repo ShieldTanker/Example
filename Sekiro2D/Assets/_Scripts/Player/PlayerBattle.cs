@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-
 public class PlayerBattle : MonoBehaviour
 {
     public Animator playerAnim;
@@ -11,7 +10,6 @@ public class PlayerBattle : MonoBehaviour
 
     // 공격
     public GameObject attackPoint;
-    public float farryTime;
     public float resetComboTime;
     public float delayAttackTime;
     public float attackTimeCount;
@@ -21,10 +19,12 @@ public class PlayerBattle : MonoBehaviour
     public GameObject guardPoint;
     public Vector2 boxSize;
     public bool chkEnemyAttack;
-    public bool isFarrying;
+    public bool inputGuard;
+    private bool checkGuard = false;
+
     private int farryCount;
     public float resetFarryTime;
-    public float farryInTime;
+    public float farryTime;
 
     // 체력
     public float playerHp;
@@ -36,6 +36,7 @@ public class PlayerBattle : MonoBehaviour
     {
         KeyInput();
         Attack();
+        Guard();
     }
 
     public void KeyInput()
@@ -48,15 +49,15 @@ public class PlayerBattle : MonoBehaviour
         }
         
         //방어
-            
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
-            chkEnemyAttack = Physics2D.OverlapBox(guardPoint.transform.position, boxSize, 0, enemyLayer);
-            
-            Guard();
+            inputGuard = true;
+            checkGuard = true;
         }
         else if(Input.GetKeyUp(KeyCode.Mouse1))
         {
+            inputGuard = false;
+            
             playerAnim.SetBool("idleGuard", false);
 
             farryTime = resetFarryTime;
@@ -79,45 +80,53 @@ public class PlayerBattle : MonoBehaviour
                 }
 
                 playerAnim.SetTrigger("isAttack" + attackCombo);
-                attackTimeCount = 0;
-            }
 
-            //공격 가능 시간이 리셋 시간 보다 작을떄
-            if (attackTimeCount < resetComboTime)
-                attackTimeCount += Time.deltaTime;
-            else
-            {
-                attackCombo = 0;
                 attackTimeCount = 0;
+                isAttack = false;
             }
+        }
+        //공격 가능 시간이 리셋 시간 보다 작을떄
+        if (attackTimeCount < resetComboTime)
+            attackTimeCount += Time.deltaTime;
+        else
+        {
+            attackCombo = 0;
+            isAttack = false;
         }
     }
 
     public void Guard()
     {
-        farryTime -= Time.deltaTime;
-
-        // 패링타이밍에 공격감지
-        if (farryTime > 0 && chkEnemyAttack)
-        {
-            farryCount++;
-
-            if (farryCount > 2)
-                farryCount = 1;
-
-            playerAnim.SetTrigger("isFarry" + farryCount);
-
-            chkEnemyAttack = false;
-            farryTime = resetFarryTime;
-
-            playerAnim.SetBool("idleGuard", false);
-        }
         
-        // 패링 타이밍 이 아니거나 공격감지 아닐때
-        else
+        if (inputGuard)
         {
-            playerAnim.SetTrigger("isGuard");
-            playerAnim.SetBool("idleGuard", true);
+            if (farryTime > 0)
+                farryTime -= Time.deltaTime;
+
+            chkEnemyAttack = Physics2D.OverlapBox(guardPoint.transform.position, boxSize, 0, enemyLayer);
+
+            // 패링타이밍에 공격감지
+            if (farryTime > 0 && chkEnemyAttack)
+            {
+                // 패링 모션 순서
+                farryCount++;
+                if (farryCount > 2)
+                    farryCount = 1;
+                playerAnim.SetTrigger("isFarry" + farryCount);
+
+                farryTime = resetFarryTime;
+
+                chkEnemyAttack = false;
+                inputGuard = false;
+            }
+
+            // 패링 타이밍 이 아니거나 공격감지 아닐때
+            else if(farryTime <= 0 && checkGuard)
+            {
+                checkGuard = false;
+                playerAnim.SetTrigger("isGuard");
+                playerAnim.SetBool("idleGuard", true);
+            }
         }
     }
 
