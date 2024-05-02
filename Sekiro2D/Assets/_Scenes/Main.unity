@@ -412,6 +412,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerAnim: {fileID: 708332691}
+  pBState: 0
   jumpForce: 8
   moveSpeed: 10
   grdCheckLayerMask:
@@ -435,15 +436,15 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   attackPoint: {fileID: 71504543}
-  farryTime: 2
-  resetComboTime: 1.4
+  resetComboTime: 1.2
   delayAttackTime: 0.8
+  attackTimeCount: 0
   guardPoint: {fileID: 1422850452}
   boxSize: {x: 2.5, y: 2}
   chkEnemyAttack: 0
-  isFarrying: 0
-  resetFarryTime: 2
-  farryInTime: 0.2
+  inputGuard: 0
+  resetFarryTime: 0.2
+  farryTime: 0.2
   playerHp: 0
 --- !u!50 &708332687
 Rigidbody2D:

@@ -2,11 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum PlayerBattleState
+{
+    Idle,
+    Attack,
+    Guard,
+    Farrying,
+    Die
+}
 
 public class PlayerBattle : MonoBehaviour
 {
     public Animator playerAnim;
     public LayerMask enemyLayer;
+
+    //플레이어 상태
+    public static PlayerBattleState playerBattleState;
 
     // 공격
     public GameObject attackPoint;
@@ -14,6 +25,7 @@ public class PlayerBattle : MonoBehaviour
     public float delayAttackTime;
     public float attackTimeCount;
     private bool isAttack;
+    private int attackCombo = 0;
 
     // 방어
     public GameObject guardPoint;
@@ -29,7 +41,6 @@ public class PlayerBattle : MonoBehaviour
     // 체력
     public float playerHp;
 
-    private int attackCombo = 0;
 
 
     private void Update()
@@ -57,7 +68,7 @@ public class PlayerBattle : MonoBehaviour
         else if(Input.GetKeyUp(KeyCode.Mouse1))
         {
             inputGuard = false;
-            
+
             playerAnim.SetBool("idleGuard", false);
 
             farryTime = resetFarryTime;
@@ -79,9 +90,11 @@ public class PlayerBattle : MonoBehaviour
                     attackTimeCount = 0;
                 }
 
+                playerBattleState = PlayerBattleState.Attack;
                 playerAnim.SetTrigger("isAttack" + attackCombo);
 
                 attackTimeCount = 0;
+                
                 isAttack = false;
             }
         }
@@ -91,6 +104,7 @@ public class PlayerBattle : MonoBehaviour
         else
         {
             attackCombo = 0;
+
             isAttack = false;
         }
     }
@@ -103,7 +117,8 @@ public class PlayerBattle : MonoBehaviour
             if (farryTime > 0)
                 farryTime -= Time.deltaTime;
 
-            chkEnemyAttack = Physics2D.OverlapBox(guardPoint.transform.position, boxSize, 0, enemyLayer);
+            chkEnemyAttack = Physics2D.OverlapBox(
+                guardPoint.transform.position, boxSize, 0, enemyLayer);
 
             // 패링타이밍에 공격감지
             if (farryTime > 0 && chkEnemyAttack)
@@ -112,11 +127,14 @@ public class PlayerBattle : MonoBehaviour
                 farryCount++;
                 if (farryCount > 2)
                     farryCount = 1;
+
+                playerBattleState = PlayerBattleState.Farrying;
                 playerAnim.SetTrigger("isFarry" + farryCount);
 
                 farryTime = resetFarryTime;
 
                 chkEnemyAttack = false;
+
                 inputGuard = false;
             }
 
@@ -124,10 +142,19 @@ public class PlayerBattle : MonoBehaviour
             else if(farryTime <= 0 && checkGuard)
             {
                 checkGuard = false;
+
+                playerBattleState = PlayerBattleState.Guard;
+                Debug.Log(playerBattleState);
+
                 playerAnim.SetTrigger("isGuard");
                 playerAnim.SetBool("idleGuard", true);
             }
         }
+    }
+
+    public void SetStateIdle()
+    {
+        playerBattleState = PlayerBattleState.Idle;
     }
 
     private void OnDrawGizmos()

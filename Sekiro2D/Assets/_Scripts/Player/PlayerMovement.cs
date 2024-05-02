@@ -2,10 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class PlayerMovement : MonoBehaviour
 {
 
     public Animator playerAnim;
+
+    // 플레이어 상태
+    public PlayerBattleState pBState;
 
     // 움직임
     Rigidbody2D rb;
@@ -29,6 +33,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        pBState = PlayerBattle.playerBattleState;
         GroundCheck();
         KeyInput();
         PlayerMove();
@@ -44,7 +49,8 @@ public class PlayerMovement : MonoBehaviour
 
     public void GroundCheck()
     {
-        grounded = Physics2D.OverlapCircle(grdCheckPoint.position, 0.1f, grdCheckLayerMask);
+        grounded = Physics2D.OverlapCircle(
+            grdCheckPoint.position, 0.1f, grdCheckLayerMask);
         playerAnim.SetBool("isGround", grounded);
         playerAnim.SetBool("isJump", false);
     }
@@ -52,23 +58,26 @@ public class PlayerMovement : MonoBehaviour
     
     public void KeyInput()
     {
-        if (Input.GetButton("Horizontal"))
+        if (pBState != PlayerBattleState.Attack && pBState != PlayerBattleState.Farrying)
         {
-            playerAnim.SetBool("isMove", true);
+            if (Input.GetButton("Horizontal"))
+            {
+                playerAnim.SetBool("isMove", true);
 
-            float inputX = Input.GetAxisRaw("Horizontal");
-            moveX = transform.position.x + inputX * moveSpeed * Time.deltaTime;
-        }
-        else
-            playerAnim.SetBool("isMove", false);
+                float inputX = Input.GetAxisRaw("Horizontal");
+                moveX = transform.position.x + inputX * moveSpeed * Time.deltaTime;
+            }
+            else
+                playerAnim.SetBool("isMove", false);
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            jumpInput = true;
-            playerAnim.SetBool("isJump", jumpInput);
+            if (Input.GetKeyDown(KeyCode.Space) && grounded)
+            {
+                jumpInput = true;
+                playerAnim.SetTrigger("isJump");
+            }
+            else
+                jumpInput = false;
         }
-        else
-            jumpInput = false;
     }
 
 }
