@@ -4,26 +4,60 @@ using UnityEngine;
 
 public class GuardFarry : MonoBehaviour
 {
-    Collider2D enemyAttack;
-    public Transform playerPos;
-    Rigidbody2D rb;
+    public GameObject player;
+
+    PlayerBattle pBattle;
+    public bool isFarry;
+    public bool isGuard;
+
+
+    public float testForce;
+
+    private void Awake()
+    {
+        isFarry = false;
+        pBattle = player.GetComponent<PlayerBattle>();
+    }
+
+    private void Update()
+    {
+        isFarry = pBattle.isFarrying;
+        isGuard = pBattle.isGuard;
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        enemyAttack = collision;
+        if (isFarry)
+        {
+            Farry(collision);
+        }
+        else if(isGuard)
+        {
+            Guard(collision);
+        }
     }
 
-    public void Guard()
+    private void Guard(Collider2D collision)
     {
-        rb = enemyAttack.gameObject.GetComponent<Rigidbody2D>();
-        rb.AddForce(Vector2.up);
+        if (collision.gameObject.tag == "Enemy")
+        {
+            Rigidbody2D rb = collision.gameObject.GetComponent<Rigidbody2D>();
+            rb.AddForce(Vector2.up * testForce);
+
+            Debug.Log("Guard");
+        }
     }
 
-    public void Farry()
+    private void Farry(Collider2D collision)
     {
-        float dis = playerPos.transform.position.x - enemyAttack.transform.position.x;
+        if (collision.gameObject.tag == "Enemy")
+        {
+            float dis = collision.transform.position.x - player.transform.position.x;
 
-        rb = enemyAttack.gameObject.GetComponent<Rigidbody2D>();
-        rb.AddForce(new Vector2(playerPos.position.x + dis, enemyAttack.transform.position.y));
+            Rigidbody2D rb = collision.gameObject.GetComponent<Rigidbody2D>();
+            rb.AddForce(new Vector2(player.transform.position.x + dis * testForce, collision.transform.position.y));
+
+            Debug.Log("Farry");
+        }
     }
 }

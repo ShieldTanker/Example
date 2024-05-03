@@ -30,7 +30,7 @@ public class PlayerMovement : MonoBehaviour
     // 지형 체크
     public LayerMask grdCheckLayerMask;
     public Transform grdCheckPoint;
-    public static bool grounded;
+    public bool grounded;
 
 
     private void Start()

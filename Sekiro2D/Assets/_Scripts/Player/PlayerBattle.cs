@@ -34,7 +34,9 @@ public class PlayerBattle : MonoBehaviour
     public bool chkEnemyAttack;
     public bool inputGuard;
     private bool checkGuard = false;
+    public bool isGuard;
 
+    public bool isFarrying;
     public static int farryCount;
     public float resetFarryTime;
     public float farryTime;
@@ -46,7 +48,7 @@ public class PlayerBattle : MonoBehaviour
 
     private void Update()
     {
-        // isGround = PlayerMovement.grounded;
+        isGround = gameObject.GetComponent<PlayerMovement>().grounded;
         KeyInput();
         Attack();
         Guard();
@@ -55,7 +57,7 @@ public class PlayerBattle : MonoBehaviour
     public void KeyInput()
     {
         // 공격
-        if (Input.GetKeyDown(KeyCode.Mouse0) && PlayerMovement.grounded)
+        if (Input.GetKeyDown(KeyCode.Mouse0) && isGround)
         {
             Debug.Log("어택");
             isAttack = true;
@@ -116,6 +118,13 @@ public class PlayerBattle : MonoBehaviour
         
         if (inputGuard)
         {
+            if (checkGuard)
+            {
+                playerBattleState = PlayerBattleState.Guard;
+                playerAnim.SetTrigger("isGuard");
+                playerAnim.SetBool("idleGuard", true);
+            }
+
             if (farryTime > 0)
                 farryTime -= Time.deltaTime;
 
@@ -125,6 +134,8 @@ public class PlayerBattle : MonoBehaviour
             // 패링타이밍에 공격감지
             if (farryTime > 0 && chkEnemyAttack)
             {
+                isFarrying = true;
+
                 // 패링 모션 순서
                 farryCount++;
                 if (farryCount > 2)
@@ -145,8 +156,9 @@ public class PlayerBattle : MonoBehaviour
             {
                 checkGuard = false;
 
+                isGuard = true;
                 playerBattleState = PlayerBattleState.Guard;
-                   playerAnim.SetTrigger("isGuard");
+                playerAnim.SetTrigger("isGuard");
                 playerAnim.SetBool("idleGuard", true);
             }
         }
@@ -155,6 +167,8 @@ public class PlayerBattle : MonoBehaviour
     public void SetStateIdle()
     {
         playerBattleState = PlayerBattleState.Idle;
+        isFarrying = false;
+        isGuard = false;
     }
 
     private void OnDrawGizmos()
