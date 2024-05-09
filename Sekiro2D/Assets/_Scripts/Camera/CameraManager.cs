@@ -5,6 +5,7 @@ using UnityEngine;
 public class CameraManager : MonoBehaviour
 {
     public Transform playerPosition;
+    public Transform cusorPosition;
 
     public float camSpeed;
 

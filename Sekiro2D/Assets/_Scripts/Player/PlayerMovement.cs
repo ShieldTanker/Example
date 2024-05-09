@@ -13,6 +13,7 @@ enum PlayerMoveState
 
 public class PlayerMovement : MonoBehaviour
 {
+    public Transform cusorPos;
 
     public Animator playerAnim;
 
@@ -25,8 +26,9 @@ public class PlayerMovement : MonoBehaviour
     public float jumpForce;
     public float moveSpeed;
     private float moveX;
+    private float inputX;
     private bool jumpInput;
-    
+
     // 지형 체크
     public LayerMask grdCheckLayerMask;
     public Transform grdCheckPoint;
@@ -44,17 +46,65 @@ public class PlayerMovement : MonoBehaviour
     {
         pBState = PlayerBattle.playerBattleState;
         GroundCheck();
+        
         KeyInput();
+        
         PlayerMove();
-        PlayerMoveUpdate(plMove);
+        PlayerMoveAnimUpdate(plMove);
+
+        LookCusorRotation();
     }
 
-    void PlayerMove()
+    // 마우스 위치 바라보기
+    void LookCusorRotation()
     {
-        transform.position = new Vector2(moveX, transform.position.y);
+        float cusorX = cusorPos.position.x - transform.position.x;
 
-        if (jumpInput && grounded)
-            rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
+        // 마우스 오른쪽
+        if (cusorX > 0)
+        {
+            LookRight();
+
+            // 오른쪽으로 이동
+            if (inputX > 0)
+                WalkFowardAnim();
+            //왼쪽으로 이동
+            else if (inputX < 0)
+                WalkBackAnim();
+        }
+        // 마우스가 왼쪽
+        else if (cusorX < 0)
+        {
+            LookLeft();
+
+            // 오른쪽으로 이동
+            if (inputX > 0)
+                WalkBackAnim();
+
+            //왼쪽으로 이동
+            else if (inputX < 0)
+                WalkFowardAnim();
+        }
+    }
+    
+    // 바라보는 방향
+    void LookRight()
+    {
+        transform.localScale = new Vector3(1, 1, 1);
+    }
+    void LookLeft()
+    {
+        transform.localScale = new Vector3(-1, 1, 1);
+    }
+
+    //앞으로 걷기 뒤로걷기
+    void WalkFowardAnim()
+    {
+        playerAnim.SetFloat("runSpeed", 1);
+    }
+    void WalkBackAnim()
+    {
+        playerAnim.SetFloat("runSpeed", -1);
     }
 
     public void GroundCheck()
@@ -74,7 +124,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 plMove = PlayerMoveState.Move;
 
-                float inputX = Input.GetAxisRaw("Horizontal");
+                inputX = Input.GetAxisRaw("Horizontal");
                 moveX = transform.position.x + inputX * moveSpeed * Time.deltaTime;
 
             }
@@ -91,7 +141,15 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void PlayerMoveUpdate(PlayerMoveState plMove)
+    void PlayerMove()
+    {
+        transform.position = new Vector2(moveX, transform.position.y);
+
+        if (jumpInput && grounded)
+            rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
+    }
+
+    private void PlayerMoveAnimUpdate(PlayerMoveState plMove)
     {
         switch (plMove)
         {

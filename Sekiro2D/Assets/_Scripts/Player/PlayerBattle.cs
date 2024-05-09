@@ -36,7 +36,7 @@ public class PlayerBattle : MonoBehaviour
     // 공격 범위 관련
     public Transform battlePoint;
     public Vector2 battleBoxSize;
-    // public LayerMask enemyLayer;
+    public LayerMask enemyLayer;
 
     // 방어,패링
     private bool inputGuard;
@@ -101,16 +101,14 @@ public class PlayerBattle : MonoBehaviour
     // Attack1, Attack2 애니메이션 에서 Add Event 로 호출
     public void AttackEnemy()
     {
-        enemyObj = Physics2D.OverlapBoxAll(battlePoint.position, battleBoxSize, 0f);
+        enemyObj = Physics2D.OverlapBoxAll(battlePoint.position, battleBoxSize, 0f, enemyLayer);
 
         foreach (Collider2D col in enemyObj)
         {
-            if (col.gameObject.tag == "Enemy")
-            {
-                // 여기안에 적 피격 넣을것
-                Debug.Log("EnemyHit");
-                Rigidbody2D rb = col.gameObject.GetComponent<Rigidbody2D>();
-            }
+            // 여기안에 적 피격 넣을것
+            Debug.Log("EnemyHit");
+            Rigidbody2D rb = col.gameObject.GetComponent<Rigidbody2D>();
+            rb.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
         }
     }
 

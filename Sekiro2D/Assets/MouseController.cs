@@ -9,7 +9,10 @@ public class MouseController : MonoBehaviour
 
     private void Update()
     {
-        Vector2 mPos = Input.mousePosition;
+        Vector2 mPos = Camera.main.ScreenToWorldPoint(
+            new Vector3(
+                Input.mousePosition.x,
+                Input.mousePosition.y));
         mousePos.position = mPos;
     }
 }
