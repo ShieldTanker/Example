@@ -8,6 +8,7 @@ public enum PlayerBattleState
     Attack,
     Guard,
     Farrying,
+    Hit,
     Die
 }
 
@@ -19,24 +20,24 @@ public class PlayerBattle : MonoBehaviour
     //플레이어 상태
     public static PlayerBattleState playerBattleState;
     bool isGround;
-
-    public Collider2D[] enemyCollider;
-    public Collider2D[] enemyObj;
+    private Rigidbody2D rb;
 
     // 체력
     public float playerHp;
+    public bool playerHit;
 
     // 공격 관련
+    static public bool isAttack;
     public float resetComboTime;
     public float delayAttackTime;
     public float attackTimeCount;
     private int attackCombo = 0;
-    private bool isAttack;
 
     // 공격 범위 관련
     public Transform battlePoint;
     public Vector2 battleBoxSize;
     public LayerMask enemyLayer;
+    public Collider2D[] enemyObj;
 
     // 방어,패링
     private bool inputGuard;
@@ -46,6 +47,7 @@ public class PlayerBattle : MonoBehaviour
 
     private void Update()
     {
+        rb = gameObject.GetComponent<Rigidbody2D>();
         isGround = gameObject.GetComponent<PlayerMovement>().grounded;
         KeyInput();
         Attack();
@@ -83,18 +85,26 @@ public class PlayerBattle : MonoBehaviour
             {
                 //공격모션
                 AttackCombo(2);
-
                 // 플레이어 상태
                 playerBattleState = PlayerBattleState.Attack;
-
                 // 플레이어 애니메이션 재생
                 playerAnim.SetTrigger("isAttack" + attackCombo);
-
+                
                 attackTimeCount = 0;
             }
         }
         //공격 가능 시간이 리셋 시간 보다 작을때
         ResetAttackComboTimeCount(resetComboTime);
+    }
+    private void ResetAttackComboTimeCount(float resetTime)
+    {
+        if (attackTimeCount < resetComboTime)
+            attackTimeCount += Time.deltaTime;
+        else
+        {
+            attackCombo = 0;
+            isAttack = false;
+        }
     }
 
 
@@ -112,12 +122,26 @@ public class PlayerBattle : MonoBehaviour
         }
     }
 
-    // 애니메이션 Add Event 에 넣어짐
-    public void SetStateIdle()
+    public IEnumerator KnockBack(Transform enemy, float knockBackForce, float knockBackTime)
     {
-        playerBattleState = PlayerBattleState.Idle;
-        isAttack = false;
-        inputGuard = false;
+        playerBattleState = PlayerBattleState.Hit;
+
+        float knockBackVecX = gameObject.transform.position.x - enemy.position.x;
+        
+        if (knockBackVecX > 0)
+            knockBackVecX = 1;
+        else if (knockBackVecX < 0)
+            knockBackVecX = -1;
+
+        Vector2 knockBackVec = new Vector2(knockBackVecX, transform.position.y);
+
+        rb.AddForce(knockBackVec * knockBackForce, ForceMode2D.Impulse);
+
+        yield return new WaitForSeconds(knockBackTime);
+
+        rb.velocity = Vector2.zero;
+
+        SetStateIdle();
     }
 
     private void AttackCombo(int maxCombo)
@@ -128,17 +152,6 @@ public class PlayerBattle : MonoBehaviour
         {
             attackCombo = 1;
             attackTimeCount = 0;
-        }
-    }
-
-    private void ResetAttackComboTimeCount(float resetTime)
-    {
-        if (attackTimeCount < resetComboTime)
-            attackTimeCount += Time.deltaTime;
-        else
-        {
-            attackCombo = 0;
-            isAttack = false;
         }
     }
     IEnumerator GuardOrFarry()
@@ -152,6 +165,13 @@ public class PlayerBattle : MonoBehaviour
         {
             playerBattleState = PlayerBattleState.Guard;
         }
+    }
+
+    // 가드 애니메이션 활성화
+    private void SetAnimationGuard()
+    {
+        playerAnim.SetTrigger("isGuard");
+        playerAnim.SetBool("idleGuard", true);
     }
 
     // 플레이어 데미지 입음
@@ -172,13 +192,13 @@ public class PlayerBattle : MonoBehaviour
         }
     }
 
-    // 가드 애니메이션 활성화
-    private void SetAnimationGuard()
+    // 애니메이션 Add Event 에 넣어짐
+    public void SetStateIdle()
     {
-        playerAnim.SetTrigger("isGuard");
-        playerAnim.SetBool("idleGuard", true);
+        playerBattleState = PlayerBattleState.Idle;
+        isAttack = false;
+        inputGuard = false;
     }
-
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.blue;

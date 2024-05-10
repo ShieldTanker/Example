@@ -37,6 +37,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
+        playerAnim.SetBool("isMove", false);
         moveX = transform.position.x;
         rb = GetComponent<Rigidbody2D>();
         playerAnim = GetComponent<Animator>();
@@ -49,10 +50,10 @@ public class PlayerMovement : MonoBehaviour
         
         KeyInput();
         
-        PlayerMove();
         PlayerMoveAnimUpdate(plMove);
 
-        LookCusorRotation();
+        if (!PlayerBattle.isAttack)
+            LookCusorRotation();
     }
 
     // 마우스 위치 바라보기
@@ -63,7 +64,7 @@ public class PlayerMovement : MonoBehaviour
         // 마우스 오른쪽
         if (cusorX > 0)
         {
-            LookRight();
+            LookAHead(new Vector3(1, 1, 1));
 
             // 오른쪽으로 이동
             if (inputX > 0)
@@ -75,7 +76,7 @@ public class PlayerMovement : MonoBehaviour
         // 마우스가 왼쪽
         else if (cusorX < 0)
         {
-            LookLeft();
+            LookAHead(new Vector3(-1, 1, 1));
 
             // 오른쪽으로 이동
             if (inputX > 0)
@@ -88,13 +89,9 @@ public class PlayerMovement : MonoBehaviour
     }
     
     // 바라보는 방향
-    void LookRight()
+    void LookAHead(Vector3 lookAHead)
     {
-        transform.localScale = new Vector3(1, 1, 1);
-    }
-    void LookLeft()
-    {
-        transform.localScale = new Vector3(-1, 1, 1);
+        transform.localScale = lookAHead;
     }
 
     //앞으로 걷기 뒤로걷기
@@ -127,30 +124,22 @@ public class PlayerMovement : MonoBehaviour
                 inputX = Input.GetAxisRaw("Horizontal");
                 moveX = transform.position.x + inputX * moveSpeed * Time.deltaTime;
 
+                transform.position = new Vector2(moveX, transform.position.y);
             }
             else
                 plMove = PlayerMoveState.Idle;
 
             if (Input.GetKeyDown(KeyCode.Space) && grounded)
             {
-                jumpInput = true;
                 plMove = PlayerMoveState.Jump;
+                rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
             }
-            else
-                jumpInput = false;
         }
-    }
-
-    void PlayerMove()
-    {
-        transform.position = new Vector2(moveX, transform.position.y);
-
-        if (jumpInput && grounded)
-            rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
     }
 
     private void PlayerMoveAnimUpdate(PlayerMoveState plMove)
     {
+
         switch (plMove)
         {
             case PlayerMoveState.Idle:
@@ -166,5 +155,4 @@ public class PlayerMovement : MonoBehaviour
                 break;
         }
     }
-
 }

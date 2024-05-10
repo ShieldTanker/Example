@@ -7,27 +7,17 @@ public class CameraManager : MonoBehaviour
     public Transform playerPosition;
     public Transform cusorPosition;
 
-    public float camSpeed;
-
-    private float offset;
     private float dis;
-    private float limit;
-
-    private void Start()
-    {
-        offset = gameObject.transform.position.x - playerPosition.transform.position.x;
-        limit = offset;
-    }
     private void Update()
     {
-        float xMove = Input.GetAxis("Horizontal");
-        limit += xMove * Time.deltaTime * camSpeed;
-        if (limit >= 1)
+        float mPosX = cusorPosition.transform.position.x - playerPosition.position.x;
+        mPosX = Mathf.Clamp(mPosX, -2, +2);
+        /*if (limit >= 1)
             limit = 1;
         else if (limit <= -1)
-            limit = -1;
+            limit = -1;*/
 
-        dis = playerPosition.transform.position.x + (offset * limit);
+        dis = playerPosition.transform.position.x + mPosX;
         transform.position = new Vector3(dis, transform.position.y, transform.position.z);
     }
 }
