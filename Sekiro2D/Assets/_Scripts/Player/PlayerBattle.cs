@@ -17,6 +17,11 @@ public class PlayerBattle : MonoBehaviour
     // 애니메이션
     public Animator playerAnim;
 
+    // 사운드
+    private AudioSource audioSource;
+    public AudioClip[] farrySound;
+
+
     //플레이어 상태
     public static PlayerBattleState playerBattleState;
     bool isGround;
@@ -27,6 +32,7 @@ public class PlayerBattle : MonoBehaviour
     public bool playerHit;
 
     // 공격 관련
+    public float atkDamage;
     static public bool isAttack;
     public float resetComboTime;
     public float delayAttackTime;
@@ -44,6 +50,12 @@ public class PlayerBattle : MonoBehaviour
     public static int farryCount;
     public float resetFarryTime;
     public float farryTime;
+
+
+    private void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     private void Update()
     {
@@ -107,7 +119,6 @@ public class PlayerBattle : MonoBehaviour
         }
     }
 
-
     // Attack1, Attack2 애니메이션 에서 Add Event 로 호출
     public void AttackEnemy()
     {
@@ -119,9 +130,71 @@ public class PlayerBattle : MonoBehaviour
             Debug.Log("EnemyHit");
             Rigidbody2D rb = col.gameObject.GetComponent<Rigidbody2D>();
             rb.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+
+            Enemy enemy = col.gameObject.GetComponent<Enemy>();
+            enemy.enemyHp -= atkDamage;
+        }
+    }
+    private void AttackCombo(int maxCombo)
+    {
+        //공격모션
+        attackCombo++;
+        if (attackCombo > maxCombo)
+        {
+            attackCombo = 1;
+            attackTimeCount = 0;
         }
     }
 
+    IEnumerator GuardOrFarry()
+    {
+        SetAnimationGuard();
+        playerBattleState = PlayerBattleState.Farrying;
+        
+        yield return new WaitForSeconds(resetFarryTime);
+
+        if (inputGuard)
+        {
+            playerBattleState = PlayerBattleState.Guard;
+        }
+    }
+    public void Farryed()
+    {
+        // 플레이어 패링 애니메이션 재생
+        playerAnim.SetTrigger("isFarry" + Random.Range(1, 3));
+        playerAnim.SetBool("idleGuard", false);
+
+        int randomIdx = Random.Range(0, 3);
+        audioSource.clip = farrySound[randomIdx];
+
+        audioSource.Play();
+    }
+    // 가드 애니메이션 활성화
+    private void SetAnimationGuard()
+    {
+        playerAnim.SetTrigger("isGuard");
+        playerAnim.SetBool("idleGuard", true);
+    }
+
+    // 플레이어 데미지 입음
+    public void TakeDamage(float damage)
+    {
+        if (playerBattleState == PlayerBattleState.Die)
+            return;
+
+        SetStateIdle();
+
+        if (playerHp > 0)
+        {
+            playerHp -= damage;
+            // 나중에 피격 애니메이션 넣기
+        }
+        else
+        {
+            playerBattleState = PlayerBattleState.Die;
+            // 나중에 사망 애니메이션 넣기
+        }
+    }
     public IEnumerator KnockBack(Transform enemy, float knockBackForce, float knockBackTime)
     {
         playerBattleState = PlayerBattleState.Hit;
@@ -144,54 +217,6 @@ public class PlayerBattle : MonoBehaviour
         SetStateIdle();
     }
 
-    private void AttackCombo(int maxCombo)
-    {
-        //공격모션
-        attackCombo++;
-        if (attackCombo > maxCombo)
-        {
-            attackCombo = 1;
-            attackTimeCount = 0;
-        }
-    }
-    IEnumerator GuardOrFarry()
-    {
-        SetAnimationGuard();
-        playerBattleState = PlayerBattleState.Farrying;
-        
-        yield return new WaitForSeconds(resetFarryTime);
-
-        if (inputGuard)
-        {
-            playerBattleState = PlayerBattleState.Guard;
-        }
-    }
-
-    // 가드 애니메이션 활성화
-    private void SetAnimationGuard()
-    {
-        playerAnim.SetTrigger("isGuard");
-        playerAnim.SetBool("idleGuard", true);
-    }
-
-    // 플레이어 데미지 입음
-    public void TakeDamage(float damage)
-    {
-        if (playerBattleState == PlayerBattleState.Die)
-            return;
-
-        if (playerHp > 0)
-        {
-            playerHp -= damage;
-            // 나중에 피격 애니메이션 넣기
-        }
-        else
-        {
-            playerBattleState = PlayerBattleState.Die;
-            // 나중에 사망 애니메이션 넣기
-        }
-    }
-
     // 애니메이션 Add Event 에 넣어짐
     public void SetStateIdle()
     {
@@ -199,6 +224,7 @@ public class PlayerBattle : MonoBehaviour
         isAttack = false;
         inputGuard = false;
     }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.blue;

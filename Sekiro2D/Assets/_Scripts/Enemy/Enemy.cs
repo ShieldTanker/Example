@@ -21,6 +21,9 @@ public class Enemy : MonoBehaviour
     public float knockBackForce;
     public float playerKnocBackTime;
 
+    //체력 관련
+    public float enemyHp;
+
     private void Start()
     {
         StartCoroutine(AtkTest());
@@ -42,7 +45,9 @@ public class Enemy : MonoBehaviour
 
             if (pbs == PlayerBattleState.Farrying)
             {   // 플레이어가 패링상태일때
-                Farryed();
+                pb.Farryed();
+                // 패링 당한 애니메이션 실행
+                enemyAnim.SetTrigger("FarryedAttack");
             }
             else if (pbs == PlayerBattleState.Guard)
             {   // 플레이어가 가드상태일때
@@ -56,15 +61,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void Farryed()
-    {
-        // 플레이어 패링 애니메이션 재생
-        pAnim.SetTrigger("isFarry" + Random.Range(1, 3));
-        pAnim.SetBool("idleGuard", false);
 
-        // 패링 당한 애니메이션 실행
-        enemyAnim.SetTrigger("FarryedAttack");
-    }
 
     // 공격시 닿은 물체 확인
     private Collider2D AtkCollider(Transform atkPoint, Vector2 boxSize)
@@ -83,6 +80,11 @@ public class Enemy : MonoBehaviour
         return playerColl;
     }
 
+    // 적 피격
+    public void enemyHurt(float damage)
+    {
+        enemyHp -= damage;
+    }
 
     IEnumerator AtkTest()
     {
