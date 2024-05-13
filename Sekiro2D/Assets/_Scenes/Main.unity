@@ -221,82 +221,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPosition: {fileID: 708332690}
-<<<<<<< HEAD
   cusorPosition: {fileID: 1624035141}
-=======
-  camSpeed: 10
---- !u!1 &668341856
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 668341857}
-  - component: {fileID: 668341859}
-  - component: {fileID: 668341858}
-  m_Layer: 7
-  m_Name: Enemy
-  m_TagString: Enemy
-  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &668341857
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 668341856}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.23, y: -0.05, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1225171967}
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!50 &668341858
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 668341856}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 4
---- !u!70 &668341859
-CapsuleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 668341856}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: -0.05, y: 0}
-  m_Size: {x: 0.61, y: 1.7}
-  m_Direction: 0
->>>>>>> parent of 81b66e7 (패링 판정 변경 및 적 애니메이션 수정)
 --- !u!1 &708332684
 GameObject:
   m_ObjectHideFlags: 0
@@ -306,28 +231,16 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 708332690}
+  - component: {fileID: 708332691}
   - component: {fileID: 708332689}
   - component: {fileID: 708332686}
   - component: {fileID: 708332685}
   - component: {fileID: 708332688}
   - component: {fileID: 708332687}
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   - component: {fileID: 708332692}
-=======
-  - component: {fileID: 708332691}
->>>>>>> parent of 2a81b13 (패링 사운드 추가)
-=======
-  - component: {fileID: 708332691}
->>>>>>> parent of 2a81b13 (패링 사운드 추가)
   m_Layer: 8
-=======
-  - component: {fileID: 708332691}
-  m_Layer: 0
->>>>>>> parent of 81b66e7 (패링 판정 변경 및 적 애니메이션 수정)
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -367,9 +280,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerAnim: {fileID: 708332691}
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   farrySound:
   - {fileID: 8300000, guid: 3d886e5c082fea148b3eb5fe770ef5d1, type: 3}
   - {fileID: 8300000, guid: 01994f4c76a978049a1fb93047c9bd67, type: 3}
@@ -377,39 +287,17 @@ MonoBehaviour:
   playerHp: 1000
   playerHit: 0
   atkDamage: 2
-=======
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  testForce: 5
-  battlePoint: {fileID: 1387020683}
->>>>>>> parent of 81b66e7 (패링 판정 변경 및 적 애니메이션 수정)
-=======
-  playerHp: 1000
-  playerHit: 0
->>>>>>> parent of 2a81b13 (패링 사운드 추가)
-=======
-  playerHp: 1000
-  playerHit: 0
->>>>>>> parent of 2a81b13 (패링 사운드 추가)
   resetComboTime: 0.8
   delayAttackTime: 0.7
   attackTimeCount: 0
+  battlePoint: {fileID: 1387020683}
   battleBoxSize: {x: 2.39, y: 2}
-<<<<<<< HEAD
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128
   enemyObj: []
-=======
-  chkEnemyAttack: 0
-  inputGuard: 0
-  isGuard: 0
-  isFarrying: 0
->>>>>>> parent of 81b66e7 (패링 판정 변경 및 적 애니메이션 수정)
   resetFarryTime: 0.2
   farryTime: 0.2
-  playerHp: 0
 --- !u!50 &708332687
 Rigidbody2D:
   serializedVersion: 4
@@ -537,9 +425,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 --- !u!82 &708332692
 AudioSource:
   m_ObjectHideFlags: 0
@@ -636,10 +521,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-=======
->>>>>>> parent of 2a81b13 (패링 사운드 추가)
-=======
->>>>>>> parent of 2a81b13 (패링 사운드 추가)
 --- !u!1 &953992518
 GameObject:
   m_ObjectHideFlags: 0
@@ -993,8 +874,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
-=======
->>>>>>> parent of 81b66e7 (패링 판정 변경 및 적 애니메이션 수정)
 --- !u!1 &1225171964
 GameObject:
   m_ObjectHideFlags: 0
@@ -1006,6 +885,9 @@ GameObject:
   - component: {fileID: 1225171967}
   - component: {fileID: 1225171966}
   - component: {fileID: 1225171965}
+  - component: {fileID: 1225171968}
+  - component: {fileID: 1225171970}
+  - component: {fileID: 1225171969}
   m_Layer: 7
   m_Name: WarriorEnemy
   m_TagString: Enemy
@@ -1023,7 +905,7 @@ Animator:
   m_GameObject: {fileID: 1225171964}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: ae7bfbb096f07b940b3a490f047d2f3f, type: 2}
+  m_Controller: {fileID: 9100000, guid: a879f703d8d87c24c949b6f6fb5885c6, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1093,13 +975,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1225171964}
-<<<<<<< HEAD
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -6.2, y: -1.052, z: 0}
-=======
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.33, y: 0.26, z: 0}
->>>>>>> parent of 81b66e7 (패링 판정 변경 및 적 애니메이션 수정)
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1107,7 +984,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-<<<<<<< HEAD
 --- !u!114 &1225171968
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1133,6 +1009,7 @@ MonoBehaviour:
   enemyAtkTime: 1
   knockBackForce: 5
   playerKnocBackTime: 0.3
+  enemyHp: 100
 --- !u!50 &1225171969
 Rigidbody2D:
   serializedVersion: 4
@@ -1170,8 +1047,6 @@ CapsuleCollider2D:
   m_Offset: {x: -0.03, y: 0.87}
   m_Size: {x: 0.53, y: 1.61}
   m_Direction: 0
-=======
->>>>>>> parent of 81b66e7 (패링 판정 변경 및 적 애니메이션 수정)
 --- !u!1 &1387020682
 GameObject:
   m_ObjectHideFlags: 0
@@ -1181,7 +1056,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1387020683}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BattlePosition
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1212,7 +1087,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1516797400}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: GroundCheckPoint
   m_TagString: Untagged
   m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
@@ -1234,7 +1109,6 @@ Transform:
   m_Father: {fileID: 708332690}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-<<<<<<< HEAD
 --- !u!1 &1546263386
 GameObject:
   m_ObjectHideFlags: 0
@@ -1377,8 +1251,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-=======
->>>>>>> parent of 81b66e7 (패링 판정 변경 및 적 애니메이션 수정)
 --- !u!1 &1923012403
 GameObject:
   m_ObjectHideFlags: 0
