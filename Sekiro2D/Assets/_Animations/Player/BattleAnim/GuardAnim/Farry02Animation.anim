@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Farry01Animation
+  m_Name: Farry02Animation
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -20,13 +20,13 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
-      value: {fileID: -882065552, guid: 652a3a7ada5cafe4c91b2fe644bc2e9d, type: 3}
+      value: {fileID: 105979843, guid: ade26baf1c8231341b6f7ec4ca4b6554, type: 3}
     - time: 0.1
-      value: {fileID: 1493590806, guid: 652a3a7ada5cafe4c91b2fe644bc2e9d, type: 3}
+      value: {fileID: -1408929546, guid: ade26baf1c8231341b6f7ec4ca4b6554, type: 3}
     - time: 0.2
-      value: {fileID: 275072223, guid: 652a3a7ada5cafe4c91b2fe644bc2e9d, type: 3}
+      value: {fileID: 995447488, guid: ade26baf1c8231341b6f7ec4ca4b6554, type: 3}
     - time: 0.3
-      value: {fileID: -1059656725, guid: 652a3a7ada5cafe4c91b2fe644bc2e9d, type: 3}
+      value: {fileID: 1288081390, guid: ade26baf1c8231341b6f7ec4ca4b6554, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -46,10 +46,10 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
-    - {fileID: -882065552, guid: 652a3a7ada5cafe4c91b2fe644bc2e9d, type: 3}
-    - {fileID: 1493590806, guid: 652a3a7ada5cafe4c91b2fe644bc2e9d, type: 3}
-    - {fileID: 275072223, guid: 652a3a7ada5cafe4c91b2fe644bc2e9d, type: 3}
-    - {fileID: -1059656725, guid: 652a3a7ada5cafe4c91b2fe644bc2e9d, type: 3}
+    - {fileID: 105979843, guid: ade26baf1c8231341b6f7ec4ca4b6554, type: 3}
+    - {fileID: -1408929546, guid: ade26baf1c8231341b6f7ec4ca4b6554, type: 3}
+    - {fileID: 995447488, guid: ade26baf1c8231341b6f7ec4ca4b6554, type: 3}
+    - {fileID: 1288081390, guid: ade26baf1c8231341b6f7ec4ca4b6554, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
@@ -74,11 +74,4 @@ AnimationClip:
   m_EulerEditorCurves: []
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
-  m_Events:
-  - time: 0.4
-    functionName: SetStateIdle
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
+  m_Events: []

@@ -1,9 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+
+public enum EnemyBattleState
+{
+    Idle,
+    Attack,
+    Guard,
+    Farryed,
+    Hurt,
+    Die
+}
 
 public class Enemy : MonoBehaviour
 {
+    EnemyBattleState enemyBattleState;
+    EnemyBattleState lastEBS;
+
     // 애니메이션 관련
     public Animator pAnim;
     public Animator enemyAnim;
@@ -23,14 +37,18 @@ public class Enemy : MonoBehaviour
 
     //체력 관련
     public float enemyHp;
+    public float enemyMaxHp;
+    public Slider hpBar;
+    public GameObject hpCanvas;
 
     private void Start()
     {
-        StartCoroutine(AtkTest());
+        StartSetting();
     }
 
     private void Update()
     {
+        EnemyBattleAnimUpdate(enemyBattleState);
     }
 
     public void AttackPlayer()
@@ -46,15 +64,14 @@ public class Enemy : MonoBehaviour
             if (pbs == PlayerBattleState.Farrying)
             {   // 플레이어가 패링상태일때
                 pb.Farryed();
-                // 패링 당한 애니메이션 실행
-                enemyAnim.SetTrigger("FarryedAttack");
+                enemyBattleState = EnemyBattleState.Farryed;
             }
             else if (pbs == PlayerBattleState.Guard)
             {   // 플레이어가 가드상태일때
+                StartCoroutine(pb.KnockBack(enemy.transform, knockBackForce / 2, playerKnocBackTime));
             }
             else
-            {
-                // 가드,패링 상태가 아닐때
+            {   // 가드,패링 상태가 아닐때
                StartCoroutine(pb.KnockBack(enemy.transform, knockBackForce, playerKnocBackTime));
                 pb.TakeDamage(atkDamage);
             }
@@ -84,15 +101,73 @@ public class Enemy : MonoBehaviour
     public void enemyHurt(float damage)
     {
         enemyHp -= damage;
+        hpBar.value = enemyHp / enemyMaxHp;
+
+        if (enemyHp > 0)
+        {   // 피격 소리 넣기
+            enemyBattleState = EnemyBattleState.Hurt;
+        }
+        else
+        {   // 죽는 소리 넣기
+            enemyBattleState = EnemyBattleState.Die;
+        }
     }
 
     IEnumerator AtkTest()
     {
-        while (true)
+        while (enemyBattleState != EnemyBattleState.Die)
         {
-            enemyAnim.SetTrigger("EnemyAttack");
+            enemyBattleState = EnemyBattleState.Attack;
+
             yield return new WaitForSeconds(enemyAtkTime);
+            
+            if (enemyBattleState != EnemyBattleState.Die)
+            {
+                enemyBattleState = EnemyBattleState.Idle;
+            }
         }
+    }
+
+    void EnemyBattleAnimUpdate(EnemyBattleState eBS)
+    {
+        if (lastEBS == eBS)
+            return;
+
+        switch (eBS)
+        {
+            case EnemyBattleState.Idle:
+                break;
+
+            case EnemyBattleState.Attack:
+                enemyAnim.SetTrigger("EnemyAttack");
+                break;
+
+            case EnemyBattleState.Guard:
+                break;
+
+            case EnemyBattleState.Farryed:
+                enemyAnim.SetTrigger("FarryedAttack");
+                break;
+
+            case EnemyBattleState.Hurt:
+                enemyAnim.SetTrigger("isHurt");
+                break;
+
+            case EnemyBattleState.Die:
+                enemyAnim.SetTrigger("isDie");
+                break;
+
+            default:
+                break;
+        }
+
+        lastEBS = eBS;
+    }
+
+    void StartSetting()
+    {
+        // 테스트용 공격 명령
+        StartCoroutine(AtkTest());
     }
 
     private void OnDrawGizmos()

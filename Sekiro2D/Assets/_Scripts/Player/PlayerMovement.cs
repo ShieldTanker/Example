@@ -27,7 +27,6 @@ public class PlayerMovement : MonoBehaviour
     public float moveSpeed;
     private float moveX;
     private float inputX;
-    private bool jumpInput;
 
     // 지형 체크
     public LayerMask grdCheckLayerMask;
@@ -37,23 +36,23 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        playerAnim.SetBool("isMove", false);
-        moveX = transform.position.x;
-        rb = GetComponent<Rigidbody2D>();
-        playerAnim = GetComponent<Animator>();
+        StartSetting();
     }
 
     private void Update()
     {
-        pBState = PlayerBattle.playerBattleState;
-        GroundCheck();
-        
-        KeyInput();
-        
-        PlayerMoveAnimUpdate(plMove);
+        if (pBState != PlayerBattleState.Die)
+        {
+            pBState = PlayerBattle.playerBattleState;
+            GroundCheck();
 
-        if (!PlayerBattle.isAttack)
-            LookCusorRotation();
+            KeyInput();
+
+            PlayerMoveAnimUpdate(plMove);
+
+            if (pBState != PlayerBattleState.Attack && pBState != PlayerBattleState.Hit)
+                LookCusorRotation();
+        }
     }
 
     // 마우스 위치 바라보기
@@ -108,11 +107,17 @@ public class PlayerMovement : MonoBehaviour
     {
         grounded = Physics2D.OverlapCircle(
             grdCheckPoint.position, 0.1f, grdCheckLayerMask);
+
         playerAnim.SetBool("isGround", grounded);
-        playerAnim.SetBool("isJump", false);
     }
 
-    
+    void StartSetting()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        playerAnim = GetComponent<Animator>();
+
+        moveX = transform.position.x;
+    }
     public void KeyInput()
     {
         if (pBState != PlayerBattleState.Attack && pBState != PlayerBattleState.Farrying)
