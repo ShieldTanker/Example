@@ -14,25 +14,52 @@ public enum PlayerBattleState
 
 public class PlayerBattle : MonoBehaviour
 {
-    // ¾Ö´Ï¸ŞÀÌ¼Ç
     public Animator playerAnim;
-
-    // »ç¿îµå
-    private AudioSource audioSource;
-    public AudioClip[] farrySound;
-
+<<<<<<< HEAD
+    public LayerMask enemyLayer;
+=======
+>>>>>>> parent of 2a81b13 (íŒ¨ë§ ì‚¬ìš´ë“œ ì¶”ê°€)
 
     //ÇÃ·¹ÀÌ¾î »óÅÂ
     public static PlayerBattleState playerBattleState;
     bool isGround;
+<<<<<<< HEAD
     private Rigidbody2D rb;
+=======
+
+    public float testForce;
+
+    public Collider2D[] enemyCollider;
+    public Collider2D[] enemyObj;
+>>>>>>> parent of 81b66e7 (íŒ¨ë§ íŒì • ë³€ê²½ ë° ì  ì• ë‹ˆë©”ì´ì…˜ ìˆ˜ì •)
+
+
+    // °ø°İ
+    public Transform battlePoint;
+    public float resetComboTime;
+    public float delayAttackTime;
+    public float attackTimeCount;
+    public static int attackCombo = 0;
+    private bool isAttack;
+    public Vector2 battleBoxSize;
+
+    // ¹æ¾î
+    public bool chkEnemyAttack;
+    public bool inputGuard;
+    private bool checkGuard = false;
+    public bool isGuard;
+
+    public bool isFarrying;
+    public static int farryCount;
+    public float resetFarryTime;
+    public float farryTime;
 
     // Ã¼·Â
     public float playerHp;
     public bool playerHit;
 
+<<<<<<< HEAD
     // °ø°İ °ü·Ã
-    public float atkDamage;
     static public bool isAttack;
     public float resetComboTime;
     public float delayAttackTime;
@@ -50,12 +77,11 @@ public class PlayerBattle : MonoBehaviour
     public static int farryCount;
     public float resetFarryTime;
     public float farryTime;
-
-
-    private void Start()
-    {
-        audioSource = GetComponent<AudioSource>();
-    }
+<<<<<<< HEAD
+=======
+>>>>>>> parent of 81b66e7 (íŒ¨ë§ íŒì • ë³€ê²½ ë° ì  ì• ë‹ˆë©”ì´ì…˜ ìˆ˜ì •)
+=======
+>>>>>>> parent of 2a81b13 (íŒ¨ë§ ì‚¬ìš´ë“œ ì¶”ê°€)
 
     private void Update()
     {
@@ -63,6 +89,7 @@ public class PlayerBattle : MonoBehaviour
         isGround = gameObject.GetComponent<PlayerMovement>().grounded;
         KeyInput();
         Attack();
+        Guard();
     }
 
     public void KeyInput()
@@ -72,31 +99,44 @@ public class PlayerBattle : MonoBehaviour
         {
             isAttack = true;
         }
-        else if (!isAttack)
+        
+        //¹æ¾î
+        if (Input.GetKeyDown(KeyCode.Mouse1))
         {
-            //¹æ¾î
-            if (Input.GetKeyDown(KeyCode.Mouse1))
-            {
-                inputGuard = true;
-                StartCoroutine(GuardOrFarry());
-            }
-            else if (Input.GetKeyUp(KeyCode.Mouse1))
-            {
-                SetStateIdle();
-                playerAnim.SetBool("idleGuard", false);
-            }
+            inputGuard = true;
+            checkGuard = true;
+        }
+        else if(Input.GetKeyUp(KeyCode.Mouse1))
+        {
+            inputGuard = false;
+
+            playerAnim.SetBool("idleGuard", false);
+
+            // Debug.Log("ResetFarryTime");
+            farryTime = resetFarryTime;
         }
     }
 
     public void Attack()
     {
+
         if (isAttack)
         {
             // °ø°İ°¡´É ½Ã°£ÀÌ °ø°İ µô·¹ÀÌ ½Ã°£º¸´Ù ¸¹À»¶§
             if (attackTimeCount > delayAttackTime)
             {
                 //°ø°İ¸ğ¼Ç
+<<<<<<< HEAD
                 AttackCombo(2);
+=======
+                attackCombo++;
+                if (attackCombo > 2)
+                {
+                    attackCombo = 1;
+                    attackTimeCount = 0;
+                }
+
+>>>>>>> parent of 81b66e7 (íŒ¨ë§ íŒì • ë³€ê²½ ë° ì  ì• ë‹ˆë©”ì´ì…˜ ìˆ˜ì •)
                 // ÇÃ·¹ÀÌ¾î »óÅÂ
                 playerBattleState = PlayerBattleState.Attack;
                 // ÇÃ·¹ÀÌ¾î ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı
@@ -105,9 +145,18 @@ public class PlayerBattle : MonoBehaviour
                 attackTimeCount = 0;
             }
         }
+
         //°ø°İ °¡´É ½Ã°£ÀÌ ¸®¼Â ½Ã°£ º¸´Ù ÀÛÀ»¶§
-        ResetAttackComboTimeCount(resetComboTime);
+        if (attackTimeCount < resetComboTime)
+            attackTimeCount += Time.deltaTime;
+        else
+        {
+            attackCombo = 0;
+
+            isAttack = false;
+        }
     }
+<<<<<<< HEAD
     private void ResetAttackComboTimeCount(float resetTime)
     {
         if (attackTimeCount < resetComboTime)
@@ -116,8 +165,66 @@ public class PlayerBattle : MonoBehaviour
         {
             attackCombo = 0;
             isAttack = false;
+=======
+
+    public void Guard()
+    {
+        if (farryTime > 0 && inputGuard)
+            farryTime -= Time.deltaTime;
+
+        if (inputGuard)
+        {
+            // Ã³À½ °¡µå ¿Ã¸®±â
+            if (checkGuard)
+            {
+                playerBattleState = PlayerBattleState.Guard;
+                playerAnim.SetTrigger("isGuard");
+                playerAnim.SetBool("idleGuard", true);
+
+                // ÆĞ¸µ Å¸ÀÌ¹Ö È®ÀÎ ºÎºĞ
+                if (farryTime > 0)
+                {
+                    // ÀûÀÇ °ø°İ ¸Å¼Òµå È£Ãâ
+                }
+            }
+
+            // ÆĞ¸µÅ¸ÀÌ¹Ö¿¡ °ø°İ°¨Áö
+            if (chkEnemyAttack)
+            {
+                isFarrying = true;
+
+                // ÆĞ¸µ ¸ğ¼Ç
+                farryCount++;
+                if (farryCount > 2)
+                    farryCount = 1;
+                // ÇÃ·¹ÀÌ¾î »óÅÂ
+                playerBattleState = PlayerBattleState.Farrying;
+                // ÇÃ·¹ÀÌ¾î ¾Ö´Ï¸ŞÀÌ¼Ç
+                playerAnim.SetTrigger("isFarry" + farryCount);
+
+                farryTime = resetFarryTime;
+
+                chkEnemyAttack = false;
+
+                inputGuard = false;
+                checkGuard = false;
+            }
+
+            // ÆĞ¸µ Å¸ÀÌ¹Ö ÀÌ ¾Æ´Ï°Å³ª °ø°İ°¨Áö ¾Æ´Ò¶§
+            else if(farryTime <= 0 && checkGuard)
+            {
+                checkGuard = false;
+
+                isGuard = true;
+
+                playerBattleState = PlayerBattleState.Guard;
+                playerAnim.SetTrigger("isGuard");
+                playerAnim.SetBool("idleGuard", true);
+            }
+>>>>>>> parent of 81b66e7 (íŒ¨ë§ íŒì • ë³€ê²½ ë° ì  ì• ë‹ˆë©”ì´ì…˜ ìˆ˜ì •)
         }
     }
+
 
     // Attack1, Attack2 ¾Ö´Ï¸ŞÀÌ¼Ç ¿¡¼­ Add Event ·Î È£Ãâ
     public void AttackEnemy()
@@ -126,32 +233,87 @@ public class PlayerBattle : MonoBehaviour
 
         foreach (Collider2D col in enemyObj)
         {
+<<<<<<< HEAD
             // ¿©±â¾È¿¡ Àû ÇÇ°İ ³ÖÀ»°Í
             Debug.Log("EnemyHit");
             Rigidbody2D rb = col.gameObject.GetComponent<Rigidbody2D>();
             rb.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-
-            Enemy enemy = col.gameObject.GetComponent<Enemy>();
-            enemy.enemyHp -= atkDamage;
+<<<<<<< HEAD
         }
     }
-    private void AttackCombo(int maxCombo)
+=======
+            if (col.gameObject.tag == "Enemy")
+            {
+                // ¿©±â¾È¿¡ Àû ÇÇ°İ ³ÖÀ»°Í
+                Debug.Log("EnemyHit");
+                Rigidbody2D rb = col.gameObject.GetComponent<Rigidbody2D>();
+                rb.AddForce(Vector2.up * testForce,ForceMode2D.Impulse);
+            }
+        }
+    }
+
+    // Farry1, Farry2 ¾Ö´Ï¸ŞÀÌ¼Ç ¿¡¼­ Add Event ·Î È£Ãâ
+    public void FarryAttack()
     {
-        //°ø°İ¸ğ¼Ç
-        attackCombo++;
-        if (attackCombo > maxCombo)
+        enemyCollider = Physics2D.OverlapBoxAll(battlePoint.position, battleBoxSize, 0f);
+
+        foreach (Collider2D col in enemyCollider)
         {
-            attackCombo = 1;
-            attackTimeCount = 0;
+            if (col.gameObject.tag == "Enemy")
+            {
+                // ¿©±â¾È¿¡ ÆĞ¸® ±â´É ³ÖÀ»°Í
+                Debug.Log("FarryAttack");
+                Rigidbody2D rb = col.gameObject.GetComponent<Rigidbody2D>();
+                rb.AddForce(Vector2.right * testForce, ForceMode2D.Impulse);
+            }
+        }
+    } 
+
+    // ¹æ¾î ÆÇÁ¤
+    public void GuardAttack()
+    {
+        enemyCollider = Physics2D.OverlapBoxAll(battlePoint.position, battleBoxSize, 0f);
+
+        foreach (Collider2D col in enemyCollider)
+        {
+            if (col.gameObject.tag == "Enemy")
+            {
+                // ¿©±â¾È¿¡ °¡µå ±â´É ³ÖÀ»°Í
+                Debug.Log("GuardAttack");
+
+                Rigidbody2D rb = col.gameObject.GetComponent<Rigidbody2D>();
+                rb.AddForce(Vector2.up * testForce, ForceMode2D.Impulse);
+            }
         }
     }
 
+    // ¾Ö´Ï¸ŞÀÌ¼Ç Add Event ¿¡ ³Ö¾îÁü
+    public void SetStateIdle()
+    {
+        playerBattleState = PlayerBattleState.Idle;
+        isAttack = false;
+        isFarrying = false;
+        isGuard = false;
+    }
+
+>>>>>>> parent of 81b66e7 (íŒ¨ë§ íŒì • ë³€ê²½ ë° ì  ì• ë‹ˆë©”ì´ì…˜ ìˆ˜ì •)
+
+<<<<<<< HEAD
     IEnumerator GuardOrFarry()
     {
-        SetAnimationGuard();
-        playerBattleState = PlayerBattleState.Farrying;
-        
+        enemyCollider = Physics2D.OverlapBoxAll(battlePoint.position, battleBoxSize, 0f);
+
+        foreach (Collider2D col in enemyCollider)
+        {
+            if (col.gameObject.tag == "Enemy")
+            {
+                Debug.Log("Farry");
+                yield break;
+            }
+        }
+
         yield return new WaitForSeconds(resetFarryTime);
+<<<<<<< HEAD
 
         if (inputGuard)
         {
@@ -195,6 +357,13 @@ public class PlayerBattle : MonoBehaviour
             // ³ªÁß¿¡ »ç¸Á ¾Ö´Ï¸ŞÀÌ¼Ç ³Ö±â
         }
     }
+=======
+>>>>>>> parent of 2a81b13 (íŒ¨ë§ ì‚¬ìš´ë“œ ì¶”ê°€)
+=======
+        }
+    }
+
+>>>>>>> parent of 2a81b13 (íŒ¨ë§ ì‚¬ìš´ë“œ ì¶”ê°€)
     public IEnumerator KnockBack(Transform enemy, float knockBackForce, float knockBackTime)
     {
         playerBattleState = PlayerBattleState.Hit;
@@ -217,14 +386,63 @@ public class PlayerBattle : MonoBehaviour
         SetStateIdle();
     }
 
+    private void AttackCombo(int maxCombo)
+    {
+        //°ø°İ¸ğ¼Ç
+        attackCombo++;
+        if (attackCombo > maxCombo)
+        {
+            attackCombo = 1;
+            attackTimeCount = 0;
+        }
+    }
+    IEnumerator GuardOrFarry()
+    {
+        SetAnimationGuard();
+        playerBattleState = PlayerBattleState.Farrying;
+        
+        yield return new WaitForSeconds(resetFarryTime);
+
+        if (inputGuard)
+        {
+            playerBattleState = PlayerBattleState.Guard;
+        }
+    }
+
+    // °¡µå ¾Ö´Ï¸ŞÀÌ¼Ç È°¼ºÈ­
+    private void SetAnimationGuard()
+    {
+        playerAnim.SetTrigger("isGuard");
+        playerAnim.SetBool("idleGuard", true);
+    }
+
+    // ÇÃ·¹ÀÌ¾î µ¥¹ÌÁö ÀÔÀ½
+    public void TakeDamage(float damage)
+    {
+        if (playerBattleState == PlayerBattleState.Die)
+            return;
+
+        if (playerHp > 0)
+        {
+            playerHp -= damage;
+            // ³ªÁß¿¡ ÇÇ°İ ¾Ö´Ï¸ŞÀÌ¼Ç ³Ö±â
+        }
+        else
+        {
+            playerBattleState = PlayerBattleState.Die;
+            // ³ªÁß¿¡ »ç¸Á ¾Ö´Ï¸ŞÀÌ¼Ç ³Ö±â
+        }
+    }
+
     // ¾Ö´Ï¸ŞÀÌ¼Ç Add Event ¿¡ ³Ö¾îÁü
     public void SetStateIdle()
     {
         playerBattleState = PlayerBattleState.Idle;
         isAttack = false;
         inputGuard = false;
+=======
+>>>>>>> parent of 81b66e7 (íŒ¨ë§ íŒì • ë³€ê²½ ë° ì  ì• ë‹ˆë©”ì´ì…˜ ìˆ˜ì •)
     }
-
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.blue;

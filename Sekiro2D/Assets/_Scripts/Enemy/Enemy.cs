@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+<<<<<<< HEAD:Sekiro2D/Assets/_Scripts/Enemy/Enemy.cs
     // ¾Ö´Ï¸ŞÀÌ¼Ç °ü·Ã
     public Animator pAnim;
     public Animator enemyAnim;
@@ -21,12 +22,14 @@ public class Enemy : MonoBehaviour
     public float knockBackForce;
     public float playerKnocBackTime;
 
-    //Ã¼·Â °ü·Ã
-    public float enemyHp;
-
     private void Start()
+=======
+    PlayerBattleState pb;
+    public GameObject player;
+    private void Update()
+>>>>>>> parent of 81b66e7 (íŒ¨ë§ íŒì • ë³€ê²½ ë° ì  ì• ë‹ˆë©”ì´ì…˜ ìˆ˜ì •):Sekiro2D/Assets/_Scripts/Enemy.cs
     {
-        StartCoroutine(AtkTest());
+        pb = player.GetComponent<PlayerBattleState>();
     }
 
     private void Update()
@@ -35,19 +38,15 @@ public class Enemy : MonoBehaviour
 
     public void AttackPlayer()
     {
-        Collider2D playerColl = AtkCollider(enemyAtkPoint, atkBoxSize);
-
-        // Äİ¶óÀÌ´õ°¡ ÇÃ·¹ÀÌ¾î ÅÂ±×¸¦ °¡Áö°í ÀÖÀ»¶§
-        if (playerColl != null)
+        if (pb != PlayerBattleState.Guard && pb != PlayerBattleState.Farrying)
         {
+<<<<<<< HEAD:Sekiro2D/Assets/_Scripts/Enemy/Enemy.cs
             PlayerBattle pb = playerColl.GetComponent<PlayerBattle>();
             PlayerBattleState pbs = PlayerBattle.playerBattleState;
 
             if (pbs == PlayerBattleState.Farrying)
             {   // ÇÃ·¹ÀÌ¾î°¡ ÆĞ¸µ»óÅÂÀÏ¶§
-                pb.Farryed();
-                // ÆĞ¸µ ´çÇÑ ¾Ö´Ï¸ŞÀÌ¼Ç ½ÇÇà
-                enemyAnim.SetTrigger("FarryedAttack");
+                Farryed();
             }
             else if (pbs == PlayerBattleState.Guard)
             {   // ÇÃ·¹ÀÌ¾î°¡ °¡µå»óÅÂÀÏ¶§
@@ -61,7 +60,15 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    private void Farryed()
+    {
+        // ÇÃ·¹ÀÌ¾î ÆĞ¸µ ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı
+        pAnim.SetTrigger("isFarry" + Random.Range(1, 3));
+        pAnim.SetBool("idleGuard", false);
 
+        // ÆĞ¸µ ´çÇÑ ¾Ö´Ï¸ŞÀÌ¼Ç ½ÇÇà
+        enemyAnim.SetTrigger("FarryedAttack");
+    }
 
     // °ø°İ½Ã ´êÀº ¹°Ã¼ È®ÀÎ
     private Collider2D AtkCollider(Transform atkPoint, Vector2 boxSize)
@@ -80,11 +87,6 @@ public class Enemy : MonoBehaviour
         return playerColl;
     }
 
-    // Àû ÇÇ°İ
-    public void enemyHurt(float damage)
-    {
-        enemyHp -= damage;
-    }
 
     IEnumerator AtkTest()
     {
@@ -92,6 +94,9 @@ public class Enemy : MonoBehaviour
         {
             enemyAnim.SetTrigger("EnemyAttack");
             yield return new WaitForSeconds(enemyAtkTime);
+=======
+            Debug.Log("EnemyAttack");
+>>>>>>> parent of 81b66e7 (íŒ¨ë§ íŒì • ë³€ê²½ ë° ì  ì• ë‹ˆë©”ì´ì…˜ ìˆ˜ì •):Sekiro2D/Assets/_Scripts/Enemy.cs
         }
     }
 

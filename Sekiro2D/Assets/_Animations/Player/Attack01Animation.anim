@@ -21,17 +21,19 @@ AnimationClip:
   - curve:
     - time: 0
       value: {fileID: 154441360, guid: be56421a1d24c5e46b92a9646097c18f, type: 3}
-    - time: 0.071428575
+    - time: 0.0625
       value: {fileID: -83140590, guid: be56421a1d24c5e46b92a9646097c18f, type: 3}
-    - time: 0.14285715
+    - time: 0.125
       value: {fileID: 1617817595, guid: be56421a1d24c5e46b92a9646097c18f, type: 3}
-    - time: 0.21428572
+    - time: 0.1875
       value: {fileID: -443052520, guid: be56421a1d24c5e46b92a9646097c18f, type: 3}
-    - time: 0.2857143
+    - time: 0.25
       value: {fileID: -1842636275, guid: be56421a1d24c5e46b92a9646097c18f, type: 3}
-    - time: 0.35714287
+    - time: 0.3125
       value: {fileID: 514519917, guid: be56421a1d24c5e46b92a9646097c18f, type: 3}
-    - time: 0.42857143
+    - time: 0.375
+      value: {fileID: -1129030953, guid: be56421a1d24c5e46b92a9646097c18f, type: 3}
+    - time: 0.4375
       value: {fileID: -1129030953, guid: be56421a1d24c5e46b92a9646097c18f, type: 3}
     - time: 0.5
       value: {fileID: -1129030953, guid: be56421a1d24c5e46b92a9646097c18f, type: 3}
@@ -39,7 +41,7 @@ AnimationClip:
     path: 
     classID: 212
     script: {fileID: 0}
-  m_SampleRate: 14
+  m_SampleRate: 16
   m_WrapMode: 0
   m_Bounds:
     m_Center: {x: 0, y: 0, z: 0}
@@ -62,12 +64,13 @@ AnimationClip:
     - {fileID: 514519917, guid: be56421a1d24c5e46b92a9646097c18f, type: 3}
     - {fileID: -1129030953, guid: be56421a1d24c5e46b92a9646097c18f, type: 3}
     - {fileID: -1129030953, guid: be56421a1d24c5e46b92a9646097c18f, type: 3}
+    - {fileID: -1129030953, guid: be56421a1d24c5e46b92a9646097c18f, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.5714286
+    m_StopTime: 0.5625
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -87,7 +90,7 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 0.2857143
+  - time: 0.25
     functionName: AttackEnemy
     data: 
     objectReferenceParameter: {fileID: 0}
