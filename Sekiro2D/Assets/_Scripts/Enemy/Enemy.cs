@@ -19,7 +19,6 @@ public class Enemy : MonoBehaviour
     EnemyBattleState lastEBS;
 
     // 애니메이션 관련
-    public Animator pAnim;
     public Animator enemyAnim;
 
     // 전투 범위 관련
@@ -59,20 +58,21 @@ public class Enemy : MonoBehaviour
         if (playerColl != null)
         {
             PlayerBattle pb = playerColl.GetComponent<PlayerBattle>();
-            PlayerBattleState pbs = PlayerBattle.playerBattleState;
+            PlayerState pbs = GameManager.GManager.PlState;
 
-            if (pbs == PlayerBattleState.Farrying)
+            if (pbs == PlayerState.Farrying)
             {   // 플레이어가 패링상태일때
                 pb.Farryed();
                 enemyBattleState = EnemyBattleState.Farryed;
             }
-            else if (pbs == PlayerBattleState.Guard)
+            else if (pbs == PlayerState.Guard)
             {   // 플레이어가 가드상태일때
                 StartCoroutine(pb.KnockBack(enemy.transform, knockBackForce / 2, playerKnocBackTime));
+                pb.Guarded();
             }
             else
             {   // 가드,패링 상태가 아닐때
-               StartCoroutine(pb.KnockBack(enemy.transform, knockBackForce, playerKnocBackTime));
+                StartCoroutine(pb.KnockBack(enemy.transform, knockBackForce, playerKnocBackTime));
                 pb.TakeDamage(atkDamage);
             }
         }

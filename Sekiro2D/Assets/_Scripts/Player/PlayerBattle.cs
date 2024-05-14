@@ -2,15 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum PlayerBattleState
-{
-    Idle,
-    Attack,
-    Guard,
-    Farrying,
-    Hit,
-    Die
-}
 
 public class PlayerBattle : MonoBehaviour
 {
@@ -20,11 +11,12 @@ public class PlayerBattle : MonoBehaviour
     // 사운드
     private AudioSource audioSource;
     public AudioClip[] farrySound;
+    public AudioClip guardSound;
 
 
     //플레이어 상태
-    public static PlayerBattleState playerBattleState;
-    PlayerBattleState lastPBS;
+    public PlayerState pState;
+    PlayerState lastPBS;
     private Rigidbody2D rb;
     private bool isGround;
 
@@ -60,11 +52,13 @@ public class PlayerBattle : MonoBehaviour
 
     private void Update()
     {
-        isGround = gameObject.GetComponent<PlayerMovement>().grounded;
+        isGround = PlayerMovement1.Ground;
+       
+        pState = GameManager.GManager.PlState;
 
         KeyInput();
 
-        BattleAnimUpdate(playerBattleState);
+        BattleAnimUpdate(pState);
 
         //공격 가능 시간이 리셋 시간 보다 작을때
         ResetAttackComboTimeCount(resetComboTime);
@@ -73,7 +67,8 @@ public class PlayerBattle : MonoBehaviour
 
     public void KeyInput()
     {
-        if (playerBattleState != PlayerBattleState.Hit && playerBattleState != PlayerBattleState.Die)
+        if (pState != PlayerState.Hit &&
+            pState != PlayerState.Die)
         {
             // 공격
             if (Input.GetKeyDown(KeyCode.Mouse0) && isGround)
@@ -90,8 +85,8 @@ public class PlayerBattle : MonoBehaviour
                 }
                 else if (Input.GetKeyUp(KeyCode.Mouse1))
                 {
-                    SetStateIdle();
                     playerAnim.SetBool("idleGuard", false);
+                    SetStateIdle();
                 }
             }
         }
@@ -108,8 +103,9 @@ public class PlayerBattle : MonoBehaviour
 
             //공격모션
             attackCombo = ActionCombo(attackCombo,2);
+            
             // 플레이어 상태
-            playerBattleState = PlayerBattleState.Attack;
+            GameManager.GManager.PlState = PlayerState.Attack;
         }
     }
     private void ResetAttackComboTimeCount(float resetTime)
@@ -148,13 +144,15 @@ public class PlayerBattle : MonoBehaviour
     IEnumerator GuardOrFarry()
     {
         SetAnimationGuard();
-        playerBattleState = PlayerBattleState.Farrying;
+        // pState = PlayerState.Farrying;
+        GameManager.GManager.PlState = PlayerState.Farrying;
 
         yield return new WaitForSeconds(resetFarryTime);
 
         if (inputGuard)
         {
-            playerBattleState = PlayerBattleState.Guard;
+            // pState = PlayerState.Guard;
+            GameManager.GManager.PlState = PlayerState.Guard;
         }
     }
     public void Farryed()
@@ -164,11 +162,17 @@ public class PlayerBattle : MonoBehaviour
         playerAnim.SetTrigger("isFarry" + farryCount);
 
         // 오디오 재생
-        int randomIdx = Random.Range(0, 3);
+        int randomIdx = Random.Range(0, 2);
         audioSource.clip = farrySound[randomIdx];
 
         audioSource.Play();
     }
+    public void Guarded()
+    {
+        audioSource.clip = guardSound;
+        audioSource.Play();
+    }
+
     // 가드 애니메이션 활성화
     private void SetAnimationGuard()
     {
@@ -180,7 +184,7 @@ public class PlayerBattle : MonoBehaviour
     // 플레이어 데미지 입음
     public void TakeDamage(float damage)
     {
-        if (playerBattleState == PlayerBattleState.Die)
+        if (pState == PlayerState.Die)
             return;
 
         SetStateIdle();
@@ -189,11 +193,13 @@ public class PlayerBattle : MonoBehaviour
 
         if (playerHp > 0)
         {
-            playerBattleState = PlayerBattleState.Hit;
+            // pState = PlayerState.Hit;
+            GameManager.GManager.PlState = PlayerState.Hit;
         }
         else
         {
-            playerBattleState = PlayerBattleState.Die;
+            // pState = PlayerState.Die;
+            GameManager.GManager.PlState = PlayerState.Die;
         }
     }
     public IEnumerator KnockBack(Transform enemy, float knockBackForce, float knockBackTime)
@@ -217,7 +223,7 @@ public class PlayerBattle : MonoBehaviour
     }
 
 
-    void BattleAnimUpdate(PlayerBattleState pbs)
+    void BattleAnimUpdate(PlayerState pbs)
     {
         if (lastPBS == pbs)
             return;
@@ -225,39 +231,39 @@ public class PlayerBattle : MonoBehaviour
         // 플레이어 애니메이션 재생
         switch (pbs)
         {
-            case PlayerBattleState.Idle:
+            case PlayerState.Idle:
                 break;
-            case PlayerBattleState.Attack:
+            case PlayerState.Attack:
                 playerAnim.SetTrigger("isAttack" + attackCombo);
                 break;
-            case PlayerBattleState.Guard:
+            case PlayerState.Guard:
                 break;
-            case PlayerBattleState.Farrying:
+            case PlayerState.Farrying:
                 break;
-            case PlayerBattleState.Hit:
+            case PlayerState.Hit:
                 playerAnim.SetTrigger("isHurt");
                 break;
-            case PlayerBattleState.Die:
+            case PlayerState.Die:
                 playerAnim.SetTrigger("isDie");
                 break;
             default:
                 break;
         }
 
-        lastPBS = playerBattleState;
+        lastPBS = pbs;
     }
 
     // 애니메이션 Add Event 에 넣어짐
     public void SetStateIdle()
     {
-        playerBattleState = PlayerBattleState.Idle;
+        GameManager.GManager.PlState = PlayerState.Idle;
         isAttack = false;
         inputGuard = false;
     }
 
     void StartSetting()
     {
-        playerBattleState = PlayerBattleState.Idle;
+        GameManager.GManager.PlState = PlayerState.Idle;
         audioSource = GetComponent<AudioSource>();
         rb = gameObject.GetComponent<Rigidbody2D>();
     }

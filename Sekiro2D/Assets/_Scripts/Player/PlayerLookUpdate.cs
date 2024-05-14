@@ -4,34 +4,17 @@ using UnityEngine;
 
 
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerLookUpdate : MonoBehaviour
 {
     public Transform cusorPos;
-
     public Animator playerAnim;
 
     // 플레이어 상태
     public PlayerState plState;
 
     // 움직임
-    Rigidbody2D rb;
-    public float jumpForce;
-    public float moveSpeed;
-    private float moveX;
     private float inputX;
-
-    // 지형 체크
-    public LayerMask grdCheckLayerMask;
-    public Transform grdCheckPoint;
-    private static bool ground;
-
-    public static bool Ground
-    {
-        get
-        {
-            return ground;
-        }
-    }
+    private bool lastGrd;
 
     private void Start()
     {
@@ -43,10 +26,10 @@ public class PlayerMovement : MonoBehaviour
         if (GameManager.GManager.PlState != PlayerState.Die)
         {
             plState = GameManager.GManager.PlState;
+            inputX = PlayerMovement1.inputX;
 
-            GroundCheck();
+            GroundAnimCheck(PlayerMovement1.Ground);
 
-            KeyInput();
 
             PlayerMoveAnimUpdate(plState);
 
@@ -103,49 +86,19 @@ public class PlayerMovement : MonoBehaviour
         playerAnim.SetFloat("runSpeed", -1);
     }
 
-    public void GroundCheck()
-    {
-        ground = Physics2D.OverlapCircle(
-            grdCheckPoint.position, 0.1f, grdCheckLayerMask);
-
-        playerAnim.SetBool("isGround", ground);
-    }
-
     void StartSetting()
     {
-        rb = GetComponent<Rigidbody2D>();
         playerAnim = GetComponent<Animator>();
-
-        moveX = transform.position.x;
     }
-    public void KeyInput()
+
+    private void GroundAnimCheck(bool grdCheck)
     {
-        if (plState != PlayerState.Attack &&
-            plState != PlayerState.Farrying)
-        {
-            if (Input.GetButton("Horizontal"))
-            {
-                //plMove = PlayerMoveState.Move;
-                plState = PlayerState.Move;
+        if (lastGrd == grdCheck)
+            return;
 
-                inputX = Input.GetAxisRaw("Horizontal");
-                moveX = transform.position.x + inputX * moveSpeed * Time.deltaTime;
+        playerAnim.SetBool("isGround", grdCheck);
 
-                transform.position = new Vector2(moveX, transform.position.y);
-            }
-            else
-                //plMove = PlayerMoveState.Idle;
-                plState = PlayerState.Idle;
-
-            if (Input.GetKeyDown(KeyCode.Space) && ground)
-            {
-                //plMove = PlayerMoveState.Jump;
-                plState = PlayerState.Jump;
-                GameManager.GManager.PlState = PlayerState.Jump;
-
-                rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
-            }
-        }
+        lastGrd = grdCheck;
     }
 
     private void PlayerMoveAnimUpdate(PlayerState plMove)
