@@ -9,6 +9,8 @@ public class PlayerLookUpdate : MonoBehaviour
     public Transform cusorPos;
     public Animator playerAnim;
 
+    public PlayerBattle pB;
+
     // 플레이어 상태
     public PlayerState plState;
 
@@ -23,9 +25,9 @@ public class PlayerLookUpdate : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.GManager.PlState != PlayerState.Die)
+        if (PlayerManager.PManager.PlState != PlayerState.Die)
         {
-            plState = GameManager.GManager.PlState;
+            plState = PlayerManager.PManager.PlState;
             inputX = PlayerMovement1.inputX;
 
             GroundAnimCheck(PlayerMovement1.Ground);
@@ -118,5 +120,10 @@ public class PlayerLookUpdate : MonoBehaviour
             default:
                 break;
         }
+    }
+    
+    public void SetStateIdle()
+    {
+        pB.SetStateIdle();
     }
 }

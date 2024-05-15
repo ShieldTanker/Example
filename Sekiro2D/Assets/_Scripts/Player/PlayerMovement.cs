@@ -40,9 +40,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.GManager.PlState != PlayerState.Die)
+        if (PlayerManager.PManager.PlState != PlayerState.Die)
         {
-            plState = GameManager.GManager.PlState;
+            plState = PlayerManager.PManager.PlState;
 
             GroundCheck();
 
@@ -141,7 +141,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 //plMove = PlayerMoveState.Jump;
                 plState = PlayerState.Jump;
-                GameManager.GManager.PlState = PlayerState.Jump;
+                PlayerManager.PManager.PlState = PlayerState.Jump;
 
                 rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
             }

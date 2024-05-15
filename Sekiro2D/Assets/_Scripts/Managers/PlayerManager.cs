@@ -13,12 +13,12 @@ public enum PlayerState
     Hit,
     Die
 }
-public class GameManager : MonoBehaviour
+public class PlayerManager : MonoBehaviour
 {
-
-    private static GameManager gManager;
+    private static PlayerManager pManager;
     private static PlayerState plState;
 
+    // ÇÃ·¹ÀÌ¾î »óÅÂ ÀúÀå
     public PlayerState PlState
     {
         get
@@ -31,36 +31,36 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // GameManager ½Ì±ÛÅæ
-    public static GameManager GManager
+    // PlayerManager ½Ì±ÛÅæ
+    public static PlayerManager PManager
     {
         get
         {
-            if (!gManager)
+            if (!pManager)
             {
-                gManager = FindObjectOfType(typeof(GameManager)) as GameManager;
+                pManager = FindObjectOfType(typeof(PlayerManager)) as PlayerManager;
                 
-                if (gManager == null)
+                if (pManager == null)
                     Debug.Log("no Singleton obj");
             }
 
-            return gManager;
+            return pManager;
         }
         set
         {
-            gManager = value;
+            pManager = value;
         }
     }
-
+    // PlayerManager ½Ì±ÛÅæÈ­
     private void Awake()
     {
-        if (gManager != null)
+        if (pManager != null)
         {
             Destroy(gameObject);
         }
         else
         {
-            gManager = this;
+            pManager = this;
         }
         
         DontDestroyOnLoad(gameObject);

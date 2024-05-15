@@ -37,15 +37,16 @@ public class PlayerMovement1 : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.GManager.PlState != PlayerState.Die)
+        if (PlayerManager.PManager.PlState != PlayerState.Die)
         {
-            plState = GameManager.GManager.PlState;
+            plState = PlayerManager.PManager.PlState;
 
             GroundCheck();
 
             KeyInput();
         }
     }
+
 
 
     public void GroundCheck()
@@ -67,7 +68,7 @@ public class PlayerMovement1 : MonoBehaviour
         {
             if (Input.GetButton("Horizontal"))
             {
-                GameManager.GManager.PlState = PlayerState.Move;
+                PlayerManager.PManager.PlState = PlayerState.Move;
 
                 inputX = Input.GetAxisRaw("Horizontal");
                 moveX = transform.position.x + inputX * moveSpeed * Time.deltaTime;
@@ -75,11 +76,11 @@ public class PlayerMovement1 : MonoBehaviour
                 transform.position = new Vector2(moveX, transform.position.y);
             }
             else
-                GameManager.GManager.PlState = PlayerState.Idle;
+                PlayerManager.PManager.PlState = PlayerState.Idle;
 
             if (Input.GetKeyDown(KeyCode.Space) && ground)
             {
-                GameManager.GManager.PlState = PlayerState.Jump;
+                PlayerManager.PManager.PlState = PlayerState.Jump;
 
                 rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
             }

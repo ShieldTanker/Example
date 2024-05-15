@@ -39,7 +39,7 @@ public class PlayerBattle : MonoBehaviour
     public Collider2D[] enemyObj;
 
     // 방어,패링
-    private bool inputGuard;
+    public bool inputGuard;
     public static int farryCount;
     public float resetFarryTime;
     public float farryTime;
@@ -54,7 +54,7 @@ public class PlayerBattle : MonoBehaviour
     {
         isGround = PlayerMovement1.Ground;
        
-        pState = GameManager.GManager.PlState;
+        pState = PlayerManager.PManager.PlState;
 
         KeyInput();
 
@@ -103,9 +103,9 @@ public class PlayerBattle : MonoBehaviour
 
             //공격모션
             attackCombo = ActionCombo(attackCombo,2);
-            
+
             // 플레이어 상태
-            GameManager.GManager.PlState = PlayerState.Attack;
+            PlayerManager.PManager.PlState = PlayerState.Attack;
         }
     }
     private void ResetAttackComboTimeCount(float resetTime)
@@ -113,7 +113,9 @@ public class PlayerBattle : MonoBehaviour
         if (attackTimeCount < resetTime)
             attackTimeCount += Time.deltaTime;
         else
+        {
             attackCombo = 0;
+        }
     }
 
     // Attack1, Attack2 애니메이션 에서 Add Event 로 호출
@@ -144,15 +146,13 @@ public class PlayerBattle : MonoBehaviour
     IEnumerator GuardOrFarry()
     {
         SetAnimationGuard();
-        // pState = PlayerState.Farrying;
-        GameManager.GManager.PlState = PlayerState.Farrying;
+        PlayerManager.PManager.PlState = PlayerState.Farrying;
 
         yield return new WaitForSeconds(resetFarryTime);
 
         if (inputGuard)
         {
-            // pState = PlayerState.Guard;
-            GameManager.GManager.PlState = PlayerState.Guard;
+            PlayerManager.PManager.PlState = PlayerState.Guard;
         }
     }
     public void Farryed()
@@ -194,12 +194,12 @@ public class PlayerBattle : MonoBehaviour
         if (playerHp > 0)
         {
             // pState = PlayerState.Hit;
-            GameManager.GManager.PlState = PlayerState.Hit;
+            PlayerManager.PManager.PlState = PlayerState.Hit;
         }
         else
         {
             // pState = PlayerState.Die;
-            GameManager.GManager.PlState = PlayerState.Die;
+            PlayerManager.PManager.PlState = PlayerState.Die;
         }
     }
     public IEnumerator KnockBack(Transform enemy, float knockBackForce, float knockBackTime)
@@ -256,14 +256,18 @@ public class PlayerBattle : MonoBehaviour
     // 애니메이션 Add Event 에 넣어짐
     public void SetStateIdle()
     {
-        GameManager.GManager.PlState = PlayerState.Idle;
+        PlayerManager.PManager.PlState = PlayerState.Idle;
+
+        Debug.Log("SetStateIdle");
+
         isAttack = false;
+        Debug.Log("isAttack False");
         inputGuard = false;
     }
 
     void StartSetting()
     {
-        GameManager.GManager.PlState = PlayerState.Idle;
+        PlayerManager.PManager.PlState = PlayerState.Idle;
         audioSource = GetComponent<AudioSource>();
         rb = gameObject.GetComponent<Rigidbody2D>();
     }

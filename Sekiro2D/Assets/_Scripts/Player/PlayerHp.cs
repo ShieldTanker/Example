@@ -31,7 +31,7 @@ public class PlayerHp : MonoBehaviour
 
     private void Update()
     {
-        pState = GameManager.GManager.PlState;
+        pState = PlayerManager.PManager.PlState;
 
     }
 
@@ -60,11 +60,11 @@ public class PlayerHp : MonoBehaviour
 
         if (playerHp > 0)
         {
-            GameManager.GManager.PlState = PlayerState.Hit;
+            PlayerManager.PManager.PlState = PlayerState.Hit;
         }
         else
         {
-            GameManager.GManager.PlState = PlayerState.Die;
+            PlayerManager.PManager.PlState = PlayerState.Die;
         }
     }
 
@@ -89,7 +89,7 @@ public class PlayerHp : MonoBehaviour
 
     void StartSetting()
     {
-        GameManager.GManager.PlState = PlayerState.Idle;
+        PlayerManager.PManager.PlState = PlayerState.Idle;
         audioSource = GetComponent<AudioSource>();
         rb = gameObject.GetComponent<Rigidbody2D>();
     }

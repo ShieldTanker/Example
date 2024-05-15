@@ -57,23 +57,23 @@ public class Enemy : MonoBehaviour
         // 콜라이더가 플레이어 태그를 가지고 있을때
         if (playerColl != null)
         {
-            PlayerBattle pb = playerColl.GetComponent<PlayerBattle>();
-            PlayerState pbs = GameManager.GManager.PlState;
+            PlayerBattle pB = playerColl.GetComponent<PlayerBattle>();
+            PlayerState pS = PlayerManager.PManager.PlState;
 
-            if (pbs == PlayerState.Farrying)
+            if (pS == PlayerState.Farrying)
             {   // 플레이어가 패링상태일때
-                pb.Farryed();
+                pB.Farryed();
                 enemyBattleState = EnemyBattleState.Farryed;
             }
-            else if (pbs == PlayerState.Guard)
+            else if (pS == PlayerState.Guard)
             {   // 플레이어가 가드상태일때
-                StartCoroutine(pb.KnockBack(enemy.transform, knockBackForce / 2, playerKnocBackTime));
-                pb.Guarded();
+                StartCoroutine(pB.KnockBack(enemy.transform, knockBackForce / 2, playerKnocBackTime));
+                pB.Guarded();
             }
             else
             {   // 가드,패링 상태가 아닐때
-                StartCoroutine(pb.KnockBack(enemy.transform, knockBackForce, playerKnocBackTime));
-                pb.TakeDamage(atkDamage);
+                StartCoroutine(pB.KnockBack(enemy.transform, knockBackForce, playerKnocBackTime));
+                pB.TakeDamage(atkDamage);
             }
         }
     }
