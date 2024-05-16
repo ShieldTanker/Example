@@ -9,10 +9,11 @@ public class PlayerHp : MonoBehaviour
     private AudioSource audioSource;
     public AudioClip[] farrySound;
     public AudioClip guardSound;
+    public AudioClip hurtSound;
 
 
     //플레이어 상태
-    public PlayerState pState;
+    public PlayerBattleState pState;
     private Rigidbody2D rb;
 
     // 체력
@@ -31,7 +32,7 @@ public class PlayerHp : MonoBehaviour
 
     private void Update()
     {
-        pState = PlayerManager.PManager.PlState;
+        pState = PlayerManager.PManager.PlBattleState;
 
     }
 
@@ -52,7 +53,7 @@ public class PlayerHp : MonoBehaviour
     // 플레이어 데미지 입음
     public void TakeDamage(float damage)
     {
-        if (pState == PlayerState.Die)
+        if (pState == PlayerBattleState.Die)
             return;
 
         
@@ -60,11 +61,13 @@ public class PlayerHp : MonoBehaviour
 
         if (playerHp > 0)
         {
-            PlayerManager.PManager.PlState = PlayerState.Hit;
+            PlayerManager.PManager.PlBattleState = PlayerBattleState.Hit;
+            audioSource.clip = hurtSound;
+            audioSource.Play();
         }
         else
         {
-            PlayerManager.PManager.PlState = PlayerState.Die;
+            PlayerManager.PManager.PlBattleState = PlayerBattleState.Die;
         }
     }
 

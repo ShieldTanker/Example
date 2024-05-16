@@ -9,14 +9,16 @@ public class PlayerBattle : MonoBehaviour
     public Animator playerAnim;
 
     // 사운드
+    private PlayerAudio plAudio;
     private AudioSource audioSource;
-    public AudioClip[] farrySound;
+  /*  public AudioClip[] farrySound;
     public AudioClip guardSound;
+    public AudioClip hurtSound;*/
 
 
     //플레이어 상태
-    public PlayerState pState;
-    PlayerState lastPBS;
+    public PlayerBattleState pState;
+    PlayerBattleState lastPBS;
     private Rigidbody2D rb;
     private bool isGround;
 
@@ -52,9 +54,9 @@ public class PlayerBattle : MonoBehaviour
 
     private void Update()
     {
-        isGround = PlayerMovement1.Ground;
+        isGround = PlayerMovement.Ground;
        
-        pState = PlayerManager.PManager.PlState;
+        pState = PlayerManager.PManager.PlBattleState;
 
         KeyInput();
 
@@ -67,8 +69,8 @@ public class PlayerBattle : MonoBehaviour
 
     public void KeyInput()
     {
-        if (pState != PlayerState.Hit &&
-            pState != PlayerState.Die)
+        if (pState != PlayerBattleState.Hit &&
+            pState != PlayerBattleState.Die)
         {
             // 공격
             if (Input.GetKeyDown(KeyCode.Mouse0) && isGround)
@@ -105,7 +107,7 @@ public class PlayerBattle : MonoBehaviour
             attackCombo = ActionCombo(attackCombo,2);
 
             // 플레이어 상태
-            PlayerManager.PManager.PlState = PlayerState.Attack;
+            PlayerManager.PManager.PlBattleState = PlayerBattleState.Attack;
         }
     }
     private void ResetAttackComboTimeCount(float resetTime)
@@ -146,13 +148,13 @@ public class PlayerBattle : MonoBehaviour
     IEnumerator GuardOrFarry()
     {
         SetAnimationGuard();
-        PlayerManager.PManager.PlState = PlayerState.Farrying;
+        PlayerManager.PManager.PlBattleState = PlayerBattleState.Farrying;
 
         yield return new WaitForSeconds(resetFarryTime);
 
         if (inputGuard)
         {
-            PlayerManager.PManager.PlState = PlayerState.Guard;
+            PlayerManager.PManager.PlBattleState = PlayerBattleState.Guard;
         }
     }
     public void Farryed()
@@ -161,16 +163,20 @@ public class PlayerBattle : MonoBehaviour
         farryCount = ActionCombo(farryCount,2);
         playerAnim.SetTrigger("isFarry" + farryCount);
 
-        // 오디오 재생
+        plAudio.FarrySound();
+
+       /* // 오디오 재생
         int randomIdx = Random.Range(0, 2);
         audioSource.clip = farrySound[randomIdx];
 
-        audioSource.Play();
+        audioSource.Play();*/
     }
     public void Guarded()
     {
-        audioSource.clip = guardSound;
-        audioSource.Play();
+        plAudio.GuardSound();
+
+        /*audioSource.clip = guardSound;
+        audioSource.Play();*/
     }
 
     // 가드 애니메이션 활성화
@@ -184,7 +190,7 @@ public class PlayerBattle : MonoBehaviour
     // 플레이어 데미지 입음
     public void TakeDamage(float damage)
     {
-        if (pState == PlayerState.Die)
+        if (pState == PlayerBattleState.Die)
             return;
 
         SetStateIdle();
@@ -194,12 +200,16 @@ public class PlayerBattle : MonoBehaviour
         if (playerHp > 0)
         {
             // pState = PlayerState.Hit;
-            PlayerManager.PManager.PlState = PlayerState.Hit;
+            PlayerManager.PManager.PlBattleState = PlayerBattleState.Hit;
+
+            plAudio.HurtSound();
+            /*audioSource.clip = hurtSound;
+            audioSource.Play();*/
         }
         else
         {
             // pState = PlayerState.Die;
-            PlayerManager.PManager.PlState = PlayerState.Die;
+            PlayerManager.PManager.PlBattleState = PlayerBattleState.Die;
         }
     }
     public IEnumerator KnockBack(Transform enemy, float knockBackForce, float knockBackTime)
@@ -223,7 +233,7 @@ public class PlayerBattle : MonoBehaviour
     }
 
 
-    void BattleAnimUpdate(PlayerState pbs)
+    void BattleAnimUpdate(PlayerBattleState pbs)
     {
         if (lastPBS == pbs)
             return;
@@ -231,19 +241,19 @@ public class PlayerBattle : MonoBehaviour
         // 플레이어 애니메이션 재생
         switch (pbs)
         {
-            case PlayerState.Idle:
+            case PlayerBattleState.Idle:
                 break;
-            case PlayerState.Attack:
+            case PlayerBattleState.Attack:
                 playerAnim.SetTrigger("isAttack" + attackCombo);
                 break;
-            case PlayerState.Guard:
+            case PlayerBattleState.Guard:
                 break;
-            case PlayerState.Farrying:
+            case PlayerBattleState.Farrying:
                 break;
-            case PlayerState.Hit:
+            case PlayerBattleState.Hit:
                 playerAnim.SetTrigger("isHurt");
                 break;
-            case PlayerState.Die:
+            case PlayerBattleState.Die:
                 playerAnim.SetTrigger("isDie");
                 break;
             default:
@@ -256,7 +266,7 @@ public class PlayerBattle : MonoBehaviour
     // 애니메이션 Add Event 에 넣어짐
     public void SetStateIdle()
     {
-        PlayerManager.PManager.PlState = PlayerState.Idle;
+        PlayerManager.PManager.PlBattleState = PlayerBattleState.Idle;
 
         Debug.Log("SetStateIdle");
 
@@ -268,7 +278,10 @@ public class PlayerBattle : MonoBehaviour
     void StartSetting()
     {
         PlayerManager.PManager.PlState = PlayerState.Idle;
+        
         audioSource = GetComponent<AudioSource>();
+        plAudio = GetComponent<PlayerAudio>();
+        
         rb = gameObject.GetComponent<Rigidbody2D>();
     }
 

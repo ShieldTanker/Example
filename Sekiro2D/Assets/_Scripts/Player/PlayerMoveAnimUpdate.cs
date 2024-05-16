@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 
-public class PlayerLookUpdate : MonoBehaviour
+public class PlayerMoveAnimUpdate : MonoBehaviour
 {
     public Transform cusorPos;
     public Animator playerAnim;
@@ -13,6 +13,7 @@ public class PlayerLookUpdate : MonoBehaviour
 
     // 플레이어 상태
     public PlayerState plState;
+    public PlayerBattleState plBattleState;
 
     // 움직임
     private float inputX;
@@ -25,17 +26,20 @@ public class PlayerLookUpdate : MonoBehaviour
 
     private void Update()
     {
-        if (PlayerManager.PManager.PlState != PlayerState.Die)
+        if (PlayerManager.PManager.PlBattleState != PlayerBattleState.Die)
         {
             plState = PlayerManager.PManager.PlState;
-            inputX = PlayerMovement1.inputX;
+            plBattleState = PlayerManager.PManager.PlBattleState;
+            inputX = PlayerMovement.inputX;
 
-            GroundAnimCheck(PlayerMovement1.Ground);
+            GroundAnimCheck(PlayerMovement.Ground);
 
+            WallAnimCheck(PlayerMovement.RightSensor, PlayerMovement.LeftSensor);
 
-            PlayerMoveAnimUpdate(plState);
+            PlayerAnimUpdate(plState);
 
-            if (plState != PlayerState.Attack && plState != PlayerState.Hit)
+            if (plBattleState != PlayerBattleState.Attack &&
+                plBattleState != PlayerBattleState.Hit)
                 LookCusorRotation();
         }
     }
@@ -103,7 +107,19 @@ public class PlayerLookUpdate : MonoBehaviour
         lastGrd = grdCheck;
     }
 
-    private void PlayerMoveAnimUpdate(PlayerState plMove)
+    private void WallAnimCheck(bool rightSensor, bool leftSensor)
+    {
+        if (rightSensor && !PlayerMovement.Ground)
+        {
+            PlayerManager.PManager.PlState = PlayerState.WallSlide;
+        }
+        if (leftSensor && !PlayerMovement.Ground)
+        {
+            PlayerManager.PManager.PlState = PlayerState.WallSlide;
+        }
+    }
+
+    private void PlayerAnimUpdate(PlayerState plMove)
     {
 
         switch (plMove)
@@ -116,6 +132,10 @@ public class PlayerLookUpdate : MonoBehaviour
                 break;
             case PlayerState.Jump:
                 playerAnim.SetTrigger("isJump");
+                break;
+
+            case PlayerState.WallSlide:
+                playerAnim.SetBool("isWall", true);
                 break;
             default:
                 break;

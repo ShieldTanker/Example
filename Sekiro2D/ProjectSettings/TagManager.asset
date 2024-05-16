@@ -6,8 +6,9 @@ TagManager:
   tags:
   - Enemy
   - EnemyObject
-  - PlayerAttack
-  - PlayerGuard
+  - Ground
+  - Environment
+  - Wall
   layers:
   - Default
   - TransparentFX
@@ -16,11 +17,11 @@ TagManager:
   - Water
   - UI
   - Ground
+  - Environment
+  - Wall
+  - 
   - Enemy
   - Player
-  - 
-  - 
-  - 
   - 
   - 
   - 

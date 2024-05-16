@@ -7,6 +7,11 @@ public enum PlayerState
     Idle,
     Move,
     Jump,
+    WallSlide
+}
+public enum PlayerBattleState
+{
+    Idle,
     Attack,
     Guard,
     Farrying,
@@ -17,6 +22,7 @@ public class PlayerManager : MonoBehaviour
 {
     private static PlayerManager pManager;
     private static PlayerState plState;
+    private static PlayerBattleState plBattleState;
 
     // 플레이어 상태 저장
     public PlayerState PlState
@@ -28,6 +34,17 @@ public class PlayerManager : MonoBehaviour
         set
         {
             plState = value;
+        }
+    }
+    public PlayerBattleState PlBattleState
+    {
+        get
+        {
+            return plBattleState;
+        }
+        set
+        {
+            plBattleState = value;
         }
     }
 

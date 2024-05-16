@@ -21,6 +21,10 @@ public class Enemy : MonoBehaviour
     // 애니메이션 관련
     public Animator enemyAnim;
 
+    //오디오 관련
+    private AudioSource audioSource;
+    public AudioClip hurtSound;
+
     // 전투 범위 관련
     public Collider2D[] atkColl;
     public Transform enemyAtkPoint;
@@ -58,14 +62,14 @@ public class Enemy : MonoBehaviour
         if (playerColl != null)
         {
             PlayerBattle pB = playerColl.GetComponent<PlayerBattle>();
-            PlayerState pS = PlayerManager.PManager.PlState;
+            PlayerBattleState pS = PlayerManager.PManager.PlBattleState;
 
-            if (pS == PlayerState.Farrying)
+            if (pS == PlayerBattleState.Farrying)
             {   // 플레이어가 패링상태일때
                 pB.Farryed();
                 enemyBattleState = EnemyBattleState.Farryed;
             }
-            else if (pS == PlayerState.Guard)
+            else if (pS == PlayerBattleState.Guard)
             {   // 플레이어가 가드상태일때
                 StartCoroutine(pB.KnockBack(enemy.transform, knockBackForce / 2, playerKnocBackTime));
                 pB.Guarded();
@@ -103,12 +107,15 @@ public class Enemy : MonoBehaviour
         enemyHp -= damage;
         hpBar.value = enemyHp / enemyMaxHp;
 
+        audioSource.clip = hurtSound;
+        audioSource.Play();
+
         if (enemyHp > 0)
-        {   // 피격 소리 넣기
+        {   // 피격
             enemyBattleState = EnemyBattleState.Hurt;
         }
         else
-        {   // 죽는 소리 넣기
+        {   // 사망
             enemyBattleState = EnemyBattleState.Die;
         }
     }
@@ -168,6 +175,7 @@ public class Enemy : MonoBehaviour
     {
         // 테스트용 공격 명령
         StartCoroutine(AtkTest());
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void OnDrawGizmos()
