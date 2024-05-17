@@ -7,7 +7,9 @@ public enum PlayerState
     Idle,
     Move,
     Jump,
-    WallSlide
+    Falling,
+    WallSlideRight,
+    WallSlideLeft
 }
 public enum PlayerBattleState
 {

@@ -164,19 +164,10 @@ public class PlayerBattle : MonoBehaviour
         playerAnim.SetTrigger("isFarry" + farryCount);
 
         plAudio.FarrySound();
-
-       /* // 오디오 재생
-        int randomIdx = Random.Range(0, 2);
-        audioSource.clip = farrySound[randomIdx];
-
-        audioSource.Play();*/
     }
     public void Guarded()
     {
         plAudio.GuardSound();
-
-        /*audioSource.clip = guardSound;
-        audioSource.Play();*/
     }
 
     // 가드 애니메이션 활성화
@@ -199,16 +190,12 @@ public class PlayerBattle : MonoBehaviour
 
         if (playerHp > 0)
         {
-            // pState = PlayerState.Hit;
             PlayerManager.PManager.PlBattleState = PlayerBattleState.Hit;
 
             plAudio.HurtSound();
-            /*audioSource.clip = hurtSound;
-            audioSource.Play();*/
         }
         else
         {
-            // pState = PlayerState.Die;
             PlayerManager.PManager.PlBattleState = PlayerBattleState.Die;
         }
     }
@@ -268,10 +255,7 @@ public class PlayerBattle : MonoBehaviour
     {
         PlayerManager.PManager.PlBattleState = PlayerBattleState.Idle;
 
-        Debug.Log("SetStateIdle");
-
         isAttack = false;
-        Debug.Log("isAttack False");
         inputGuard = false;
     }
 

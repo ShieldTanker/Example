@@ -13,11 +13,15 @@ public class PlayerMoveAnimUpdate : MonoBehaviour
 
     // 플레이어 상태
     public PlayerState plState;
+    PlayerState lastPlState;
     public PlayerBattleState plBattleState;
 
     // 움직임
     private float inputX;
     private bool lastGrd;
+
+    // 지형체크
+    private bool grdCheck;
 
     private void Start()
     {
@@ -26,15 +30,13 @@ public class PlayerMoveAnimUpdate : MonoBehaviour
 
     private void Update()
     {
-        if (PlayerManager.PManager.PlBattleState != PlayerBattleState.Die)
+        if (plBattleState != PlayerBattleState.Die)
         {
-            plState = PlayerManager.PManager.PlState;
-            plBattleState = PlayerManager.PManager.PlBattleState;
-            inputX = PlayerMovement.inputX;
+            GroundAnimCheck(grdCheck);
 
-            GroundAnimCheck(PlayerMovement.Ground);
+            WallAnimCheck(PlayerMovement.RightTopSensor, PlayerMovement.LeftTopSensor, grdCheck);
 
-            WallAnimCheck(PlayerMovement.RightSensor, PlayerMovement.LeftSensor);
+            UpdateParameter();
 
             PlayerAnimUpdate(plState);
 
@@ -43,6 +45,7 @@ public class PlayerMoveAnimUpdate : MonoBehaviour
                 LookCusorRotation();
         }
     }
+
 
     // 마우스 위치 바라보기
     void LookCusorRotation()
@@ -56,10 +59,10 @@ public class PlayerMoveAnimUpdate : MonoBehaviour
 
             // 오른쪽으로 이동
             if (inputX > 0)
-                WalkFowardAnim();
+                WalkAnim(1);
             //왼쪽으로 이동
             else if (inputX < 0)
-                WalkBackAnim();
+                WalkAnim(-1);
         }
         // 마우스가 왼쪽
         else if (cusorX < 0)
@@ -68,12 +71,16 @@ public class PlayerMoveAnimUpdate : MonoBehaviour
 
             // 오른쪽으로 이동
             if (inputX > 0)
-                WalkBackAnim();
+                WalkAnim(-1);
 
             //왼쪽으로 이동
             else if (inputX < 0)
-                WalkFowardAnim();
+                WalkAnim(1);
         }
+        if (lastPlState == PlayerState.WallSlideLeft)
+            LookAHead(new Vector3(-1, 1, 1));
+        else if (lastPlState == PlayerState.WallSlideRight)
+            LookAHead(Vector3.one);
     }
     
     // 바라보는 방향
@@ -83,13 +90,9 @@ public class PlayerMoveAnimUpdate : MonoBehaviour
     }
 
     //앞으로 걷기 뒤로걷기
-    void WalkFowardAnim()
+    void WalkAnim(int value)
     {
-        playerAnim.SetFloat("runSpeed", 1);
-    }
-    void WalkBackAnim()
-    {
-        playerAnim.SetFloat("runSpeed", -1);
+        playerAnim.SetFloat("runSpeed", value);
     }
 
     void StartSetting()
@@ -102,30 +105,33 @@ public class PlayerMoveAnimUpdate : MonoBehaviour
         if (lastGrd == grdCheck)
             return;
 
-        playerAnim.SetBool("isGround", grdCheck);
-
         lastGrd = grdCheck;
+
+        playerAnim.SetBool("isGround", lastGrd);
+        playerAnim.SetBool("isFalling", !lastGrd);
     }
 
-    private void WallAnimCheck(bool rightSensor, bool leftSensor)
+    private void WallAnimCheck(bool rightTopSen, bool leftTopSen, bool grdCheck)
     {
-        if (rightSensor && !PlayerMovement.Ground)
+        if (rightTopSen && !grdCheck)
         {
-            PlayerManager.PManager.PlState = PlayerState.WallSlide;
+            PlayerManager.PManager.PlState = PlayerState.WallSlideRight;
         }
-        if (leftSensor && !PlayerMovement.Ground)
+        else if (leftTopSen && !grdCheck)
         {
-            PlayerManager.PManager.PlState = PlayerState.WallSlide;
+            PlayerManager.PManager.PlState = PlayerState.WallSlideLeft;
         }
     }
 
     private void PlayerAnimUpdate(PlayerState plMove)
     {
+        if (lastPlState == plMove)
+            return;
 
         switch (plMove)
         {
             case PlayerState.Idle:
-                playerAnim.SetBool("isMove", false);
+                SetMoveStateIdle();
                 break;
             case PlayerState.Move:
                 playerAnim.SetBool("isMove", true);
@@ -133,16 +139,51 @@ public class PlayerMoveAnimUpdate : MonoBehaviour
             case PlayerState.Jump:
                 playerAnim.SetTrigger("isJump");
                 break;
+            case PlayerState.Falling:
+                AirStateIdle();
+                playerAnim.SetBool("isFalling",true);
+                break;
 
-            case PlayerState.WallSlide:
-                playerAnim.SetBool("isWall", true);
+            case PlayerState.WallSlideRight:
+                Debug.Log("오른쪽 벽타기");
+                playerAnim.SetBool("isWallRight", true);
+                break;
+
+            case PlayerState.WallSlideLeft:
+                Debug.Log("왼쪽 벽타기");
+                playerAnim.SetBool("isWallLeft", true);
                 break;
             default:
                 break;
         }
+
+        lastPlState = plMove;
     }
-    
-    public void SetStateIdle()
+
+    void UpdateParameter()
+    {
+        // 상태 관련
+        plState = PlayerManager.PManager.PlState;
+        plBattleState = PlayerManager.PManager.PlBattleState;
+
+        inputX = PlayerMovement.inputX;
+        grdCheck = PlayerMovement.Ground;
+    }
+
+    public void SetMoveStateIdle()
+    {
+        playerAnim.SetBool("isMove", false);
+        playerAnim.SetBool("isFalling", false);
+    }
+
+    void AirStateIdle()
+    {
+        playerAnim.SetBool("isMove", false);
+        playerAnim.SetBool("isWallRight", false);
+        playerAnim.SetBool("isWallLeft", false);
+    }
+    // 애니메이션에서 호출됨 삭제 금지
+    void SetStateIdle()
     {
         pB.SetStateIdle();
     }
