@@ -505,9 +505,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   plState: 0
   plBattleState: 0
+  isWall: 0
   jumpForce: 6
   wallJumpForce: 10
-  moveSpeed: 8
+  moveSpeed: 7
   fallingSpeed: 0.2
   grdCheckLayerMask:
     serializedVersion: 2

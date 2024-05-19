@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
     public PlayerState plState;
     PlayerState lastPlState;
     public PlayerBattleState plBattleState;
-
+    public bool isWall;
 
     // 움직임
     Rigidbody2D rb;
@@ -87,14 +87,20 @@ public class PlayerMovement : MonoBehaviour
 
             if (Input.GetButton("Horizontal"))
             {
-                transform.position = new Vector2(transform.position.x + moveX, transform.position.y);
+                // transform.position = new Vector2(transform.position.x + moveX, transform.position.y);
+
+                rb.velocity = new Vector2(moveX, rb.velocity.y);
+
                 if (ground)
                 {
                     PlayerManager.PManager.PlState = PlayerState.Move;
                 }
             }
             else
+            {
+                rb.velocity = new Vector2(0,rb.velocity.y);
                 PlayerManager.PManager.PlState = PlayerState.Idle;
+            }
 
             // 점프 관련
             if (Input.GetKeyDown(KeyCode.Space) && ground)
@@ -107,14 +113,19 @@ public class PlayerMovement : MonoBehaviour
             // 오른쪽 벽 슬라이드
             else if (plState == PlayerState.WallSlideRight)
             {
+                isWall = true;
+                WallSlideSpeed();
                 WallJump(Vector2.left);
             }
             else if (plState == PlayerState.WallSlideLeft)
             {
+                isWall = true;
+                WallSlideSpeed();
                 WallJump(Vector2.right);
             }
             else if (!ground)
             {
+                isWall = false;
                 PlayerManager.PManager.PlState = PlayerState.Falling;
             }
         }
@@ -123,20 +134,24 @@ public class PlayerMovement : MonoBehaviour
 
     void WallJump(Vector2 wayVec)
     {
-        if (lastPlState != plState)
-        {
-            float slowY = rb.velocity.y * fallingSpeed;
-            rb.velocity = new Vector2(0, slowY);
-        }
-
         if (Input.GetKeyDown(KeyCode.Space))
         {
             PlayerManager.PManager.PlState = PlayerState.Jump;
 
-            Vector2 wallRightJump = (Vector2.up + wayVec) * jumpForce;
-            wallRightJump.Normalize();
+            Vector2 wallJump = (Vector2.up + wayVec) * jumpForce;
+            wallJump.Normalize();
 
-            rb.AddForce(wallRightJump * wallJumpForce, ForceMode2D.Impulse);
+            rb.AddForce(wallJump * wallJumpForce, ForceMode2D.Impulse);
+        }
+    }
+
+    // 벽에 닿았을시 속도 감소
+    private void WallSlideSpeed()
+    {
+        if (isWall)
+        {
+            float slowY = rb.velocity.y * fallingSpeed;
+            rb.velocity = new Vector2(rb.velocity.x, slowY);
         }
     }
 
@@ -144,7 +159,7 @@ public class PlayerMovement : MonoBehaviour
     void MovePosX()
     {
         inputX = Input.GetAxisRaw("Horizontal");
-        moveX = inputX * moveSpeed * Time.deltaTime;
+        moveX = inputX * moveSpeed;
     }
 
     // 지형 체크 메소드들
