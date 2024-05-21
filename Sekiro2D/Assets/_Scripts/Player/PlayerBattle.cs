@@ -139,11 +139,10 @@ public class PlayerBattle : MonoBehaviour
 
         foreach (Collider2D col in enemyObj)
         {
-            Enemy enemy = col.gameObject.GetComponent<Enemy>();
+            EnemyBattle enemy = col.gameObject.GetComponent<EnemyBattle>();
             enemy.enemyHurt(atkDamage);
         }
     }
-
 
     IEnumerator GuardOrFarry()
     {
@@ -210,13 +209,17 @@ public class PlayerBattle : MonoBehaviour
 
         Vector2 knockBackVec = new Vector2(knockBackVecX, transform.position.y);
 
-        rb.AddForce(knockBackVec * knockBackForce, ForceMode2D.Impulse);
+        // rb.AddForce(knockBackVec * knockBackForce, ForceMode2D.Impulse);
+        rb.velocity = knockBackVec * knockBackForce;
 
         yield return new WaitForSeconds(knockBackTime);
 
         rb.velocity = Vector2.zero;
 
-        SetStateIdle();
+        if (pState != PlayerBattleState.Guard)
+        {
+            SetStateIdle();
+        }
     }
 
 

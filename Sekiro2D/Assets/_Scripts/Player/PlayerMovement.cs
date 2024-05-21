@@ -94,7 +94,9 @@ public class PlayerMovement : MonoBehaviour
                     PlayerManager.PManager.PlState = PlayerState.Move;
                 }
             }
-            else if(ground)
+            else if(ground &&
+                    (plBattleState != PlayerBattleState.Guard &&
+                    plBattleState != PlayerBattleState.Hit))
             {
                 rb.velocity = new Vector2(0, rb.velocity.y);
                 PlayerManager.PManager.PlState = PlayerState.Idle;

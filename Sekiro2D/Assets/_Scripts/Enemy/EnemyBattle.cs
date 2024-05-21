@@ -13,7 +13,7 @@ public enum EnemyBattleState
     Die
 }
 
-public class Enemy : MonoBehaviour
+public class EnemyBattle : MonoBehaviour
 {
     EnemyBattleState enemyBattleState;
     EnemyBattleState lastEBS;
@@ -81,7 +81,6 @@ public class Enemy : MonoBehaviour
             }
         }
     }
-
 
 
     // 공격시 닿은 물체 확인
@@ -174,7 +173,7 @@ public class Enemy : MonoBehaviour
     void StartSetting()
     {
         // 테스트용 공격 명령
-        StartCoroutine(AtkTest());
+        //StartCoroutine(AtkTest());
         audioSource = GetComponent<AudioSource>();
     }
 
