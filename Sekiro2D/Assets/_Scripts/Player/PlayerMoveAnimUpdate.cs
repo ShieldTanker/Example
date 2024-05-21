@@ -133,24 +133,26 @@ public class PlayerMoveAnimUpdate : MonoBehaviour
             case PlayerState.Idle:
                 SetMoveStateIdle();
                 break;
+
             case PlayerState.Move:
                 playerAnim.SetBool("isMove", true);
                 break;
+
             case PlayerState.Jump:
+                Debug.Log("Jump");
                 playerAnim.SetTrigger("isJump");
                 break;
+
             case PlayerState.Falling:
                 AirStateIdle();
                 playerAnim.SetBool("isFalling",true);
                 break;
 
             case PlayerState.WallSlideRight:
-                Debug.Log("오른쪽 벽타기");
                 playerAnim.SetBool("isWallRight", true);
                 break;
 
             case PlayerState.WallSlideLeft:
-                Debug.Log("왼쪽 벽타기");
                 playerAnim.SetBool("isWallLeft", true);
                 break;
             default:

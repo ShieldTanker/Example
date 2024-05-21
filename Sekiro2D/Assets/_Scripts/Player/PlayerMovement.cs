@@ -8,15 +8,17 @@ public class PlayerMovement : MonoBehaviour
 {
 
     // 플레이어 상태
-    public PlayerState plState;
+    PlayerState plState;
     PlayerState lastPlState;
-    public PlayerBattleState plBattleState;
-    public bool isWall;
+    PlayerBattleState plBattleState;
+    bool isWallJump;
+    public bool isWallSlide;
 
     // 움직임
     Rigidbody2D rb;
     public float jumpForce;
     public float wallJumpForce;
+    public float wallJumpTime;
 
     public float moveSpeed;
     private float moveX;
@@ -66,10 +68,9 @@ public class PlayerMovement : MonoBehaviour
         {
             UpdateParameter();
 
-            GroundCheck();
-            WallCheck();
-
             KeyInput();
+
+            CheckUpdate();
 
             if (lastPlState != plState)
                 lastPlState = plState;
@@ -78,77 +79,83 @@ public class PlayerMovement : MonoBehaviour
 
     public void KeyInput()
     {
-        if (plBattleState != PlayerBattleState.Attack &&
-            plBattleState != PlayerBattleState.Farrying)
+        if (plBattleState == PlayerBattleState.Attack || plBattleState == PlayerBattleState.Farrying)
+            rb.velocity = Vector2.zero;
+        else
         {
             MovePosX();
-            // 벽에 닿았을시
-            LimitCheck();
 
+            // 입력이 있을시
             if (Input.GetButton("Horizontal"))
             {
-                // transform.position = new Vector2(transform.position.x + moveX, transform.position.y);
-
-                rb.velocity = new Vector2(moveX, rb.velocity.y);
-
-                if (ground)
+                if (!isWallJump)
                 {
+                    rb.velocity = new Vector2(moveX, rb.velocity.y);
                     PlayerManager.PManager.PlState = PlayerState.Move;
                 }
             }
-            else
+            else if(ground)
             {
-                rb.velocity = new Vector2(0,rb.velocity.y);
+                rb.velocity = new Vector2(0, rb.velocity.y);
                 PlayerManager.PManager.PlState = PlayerState.Idle;
             }
+            // 벽점프
+            InputWallJump();
+            WallSlideSpeed();
 
-            // 점프 관련
-            if (Input.GetKeyDown(KeyCode.Space) && ground)
-            {
-                PlayerManager.PManager.PlState = PlayerState.Jump;
-
-                rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
-            }
-
-            // 오른쪽 벽 슬라이드
-            else if (plState == PlayerState.WallSlideRight)
-            {
-                isWall = true;
-                WallSlideSpeed();
-                WallJump(Vector2.left);
-            }
-            else if (plState == PlayerState.WallSlideLeft)
-            {
-                isWall = true;
-                WallSlideSpeed();
-                WallJump(Vector2.right);
-            }
-            else if (!ground)
-            {
-                isWall = false;
-                PlayerManager.PManager.PlState = PlayerState.Falling;
-            }
+            InputJump();
         }
     }
 
+    // 점프관련
+    void InputJump()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && ground)
+        {
+            PlayerManager.PManager.PlState = PlayerState.Jump;
+            rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
+        }
+    }
+    void InputWallJump()
+    {
+        if (!ground)
+        {
+            // 오른쪽 벽일때
+            if (plState == PlayerState.WallSlideRight)
+                WallJump(Vector2.left);
 
+            // 왼쪽 벽일때
+            else if (plState == PlayerState.WallSlideLeft)
+                WallJump(Vector2.right);
+        }
+    }
     void WallJump(Vector2 wayVec)
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            isWallJump = true;
+            Invoke("FalseWallJump", wallJumpTime);
+
+            isWallSlide = false;
             PlayerManager.PManager.PlState = PlayerState.Jump;
 
             Vector2 wallJump = (Vector2.up + wayVec) * jumpForce;
             wallJump.Normalize();
 
-            rb.AddForce(wallJump * wallJumpForce, ForceMode2D.Impulse);
+            rb.velocity = wallJump * wallJumpForce;
         }
     }
-
+    
+    // 벽점프 거짓으로 만드는 메소드
+    void FalseWallJump()
+    {
+        isWallJump = false;
+    }
+    
     // 벽에 닿았을시 속도 감소
     private void WallSlideSpeed()
     {
-        if (isWall)
+        if (isWallSlide)
         {
             float slowY = rb.velocity.y * fallingSpeed;
             rb.velocity = new Vector2(rb.velocity.x, slowY);
@@ -162,12 +169,24 @@ public class PlayerMovement : MonoBehaviour
         moveX = inputX * moveSpeed;
     }
 
+    void CheckUpdate()
+    {
+        GroundCheck();
+        WallCheck();
+        LimitCheck();
+        CheckWallSlide();
+        CheckFallingState();
+
+    }
+
     // 지형 체크 메소드들
     void LimitCheck()
     {
         if ((inputX > 0 && (rTopWall || rLowWall)) ||
             (inputX < 0 && (lTopWall || lLowWall)))
+        {
             moveX = 0f;
+        }
     }
     public void GroundCheck()
     {
@@ -186,8 +205,24 @@ public class PlayerMovement : MonoBehaviour
         lTopWall = CheckPosition(lTopWall, senseTopLeft);
         lLowWall = CheckPosition(lLowWall, senseLowLeft);
     }
+    void CheckFallingState()
+    {
+        if (!ground && plState != PlayerState.Jump &&
+            (plState != PlayerState.WallSlideLeft || plState != PlayerState.WallSlideRight))
+        {
+            isWallSlide = false;
+            PlayerManager.PManager.PlState = PlayerState.Falling;
+        }
+    }
+    void CheckWallSlide()
+    {
+        if (plState == PlayerState.WallSlideRight || plState == PlayerState.WallSlideLeft)
+            isWallSlide = true;
+        else
+            isWallSlide = false;
+    }
     
-    // 시작 세팅 메소드
+    // 세팅 메소드
     void StartSetting()
     {
         rb = GetComponent<Rigidbody2D>();
