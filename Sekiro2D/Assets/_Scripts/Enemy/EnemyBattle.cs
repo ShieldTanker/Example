@@ -15,7 +15,7 @@ public enum EnemyBattleState
 
 public class EnemyBattle : MonoBehaviour
 {
-    EnemyBattleState enemyBattleState;
+    public EnemyBattleState enemyBattleState;
     EnemyBattleState lastEBS;
 
     // 애니메이션 관련
@@ -37,6 +37,10 @@ public class EnemyBattle : MonoBehaviour
     public float enemyAtkTime;
     public float knockBackForce;
     public float playerKnocBackTime;
+
+    // 전투 상태 관련
+    public static bool isFarryed;
+    public float FarryDelay;
 
     //체력 관련
     public float enemyHp;
@@ -68,6 +72,10 @@ public class EnemyBattle : MonoBehaviour
             {   // 플레이어가 패링상태일때
                 pB.Farryed();
                 enemyBattleState = EnemyBattleState.Farryed;
+
+                isFarryed = true;
+                Invoke("FalseFarryed", FarryDelay);
+
             }
             else if (pS == PlayerBattleState.Guard)
             {   // 플레이어가 가드상태일때
@@ -81,7 +89,10 @@ public class EnemyBattle : MonoBehaviour
             }
         }
     }
-
+    void FalseFarryed()
+    {
+        isFarryed = false;
+    }
 
     // 공격시 닿은 물체 확인
     private Collider2D AtkCollider(Transform atkPoint, Vector2 boxSize)
@@ -119,20 +130,6 @@ public class EnemyBattle : MonoBehaviour
         }
     }
 
-    IEnumerator AtkTest()
-    {
-        while (enemyBattleState != EnemyBattleState.Die)
-        {
-            enemyBattleState = EnemyBattleState.Attack;
-
-            yield return new WaitForSeconds(enemyAtkTime);
-            
-            if (enemyBattleState != EnemyBattleState.Die)
-            {
-                enemyBattleState = EnemyBattleState.Idle;
-            }
-        }
-    }
 
     void EnemyBattleAnimUpdate(EnemyBattleState eBS)
     {
@@ -161,6 +158,7 @@ public class EnemyBattle : MonoBehaviour
 
             case EnemyBattleState.Die:
                 enemyAnim.SetTrigger("isDie");
+                enemyAnim.SetBool("enemyDied",true);
                 break;
 
             default:
@@ -172,8 +170,6 @@ public class EnemyBattle : MonoBehaviour
 
     void StartSetting()
     {
-        // 테스트용 공격 명령
-        //StartCoroutine(AtkTest());
         audioSource = GetComponent<AudioSource>();
     }
 

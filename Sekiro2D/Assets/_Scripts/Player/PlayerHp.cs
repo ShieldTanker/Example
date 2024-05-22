@@ -33,7 +33,6 @@ public class PlayerHp : MonoBehaviour
     private void Update()
     {
         pState = PlayerManager.PManager.PlBattleState;
-
     }
 
     public void Farryed()
@@ -56,7 +55,6 @@ public class PlayerHp : MonoBehaviour
         if (pState == PlayerBattleState.Die)
             return;
 
-        
         playerHp -= damage;
 
         if (playerHp > 0)

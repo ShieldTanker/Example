@@ -11,10 +11,6 @@ public class PlayerBattle : MonoBehaviour
     // 사운드
     private PlayerAudio plAudio;
     private AudioSource audioSource;
-  /*  public AudioClip[] farrySound;
-    public AudioClip guardSound;
-    public AudioClip hurtSound;*/
-
 
     //플레이어 상태
     public PlayerBattleState pState;
@@ -24,7 +20,7 @@ public class PlayerBattle : MonoBehaviour
 
     // 체력
     public float playerHp;
-    public bool playerHit;
+    // public bool playerHit;
 
     // 공격 관련
     public float atkDamage;
@@ -54,17 +50,20 @@ public class PlayerBattle : MonoBehaviour
 
     private void Update()
     {
-        isGround = PlayerMovement.Ground;
-       
-        pState = PlayerManager.PManager.PlBattleState;
+        if (pState != PlayerBattleState.Die)
+        {
+            isGround = PlayerMovement.Ground;
 
-        KeyInput();
+            pState = PlayerManager.PManager.PlBattleState;
 
-        BattleAnimUpdate(pState);
+            KeyInput();
 
-        //공격 가능 시간이 리셋 시간 보다 작을때
-        ResetAttackComboTimeCount(resetComboTime);
+            BattleAnimUpdate(pState);
 
+            //공격 가능 시간이 리셋 시간 보다 작을때
+            ResetAttackComboTimeCount(resetComboTime);
+
+        }
     }
 
     public void KeyInput()
@@ -184,7 +183,7 @@ public class PlayerBattle : MonoBehaviour
             return;
 
         SetStateIdle();
-        
+
         playerHp -= damage;
 
         if (playerHp > 0)
@@ -216,7 +215,7 @@ public class PlayerBattle : MonoBehaviour
 
         rb.velocity = Vector2.zero;
 
-        if (pState != PlayerBattleState.Guard)
+        if (pState != PlayerBattleState.Guard && pState != PlayerBattleState.Die)
         {
             SetStateIdle();
         }

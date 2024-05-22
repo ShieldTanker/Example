@@ -26,6 +26,7 @@ public class PlayerManager : MonoBehaviour
     private static PlayerState plState;
     private static PlayerBattleState plBattleState;
 
+
     // 플레이어 상태 저장
     public PlayerState PlState
     {
@@ -85,5 +86,17 @@ public class PlayerManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         Application.targetFrameRate = 60;
+    }
+
+    private void Update()
+    {
+        if (PlBattleState == PlayerBattleState.Die)
+        {
+            Debug.Log("Die");
+        }
+        else
+        {
+            Debug.Log(PlBattleState);
+        }
     }
 }
