@@ -13,7 +13,7 @@ public class ChaseState : StateMachineBehaviour
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        EnemyAI enemyAI = animator.GetComponent<EnemyAI>();
+        EnemyBattle enemyAI = animator.GetComponent<EnemyBattle>();
         enemyAI.GoToTarget();
     }
 

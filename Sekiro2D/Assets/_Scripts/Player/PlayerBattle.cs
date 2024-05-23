@@ -8,9 +8,9 @@ public class PlayerBattle : MonoBehaviour
     // 애니메이션
     public Animator playerAnim;
 
+
     // 사운드
     private PlayerAudio plAudio;
-    private AudioSource audioSource;
 
     //플레이어 상태
     public PlayerBattleState pState;
@@ -20,7 +20,7 @@ public class PlayerBattle : MonoBehaviour
 
     // 체력
     public float playerHp;
-    // public bool playerHit;
+    public float playerMaxHP;
 
     // 공격 관련
     public float atkDamage;
@@ -185,6 +185,8 @@ public class PlayerBattle : MonoBehaviour
         SetStateIdle();
 
         playerHp -= damage;
+        
+        ChangeHpBarValue();
 
         if (playerHp > 0)
         {
@@ -260,12 +262,16 @@ public class PlayerBattle : MonoBehaviour
         isAttack = false;
         inputGuard = false;
     }
+    void ChangeHpBarValue()
+    {
+        PlayerManager.PManager.PlayerHpBarChange(playerHp, playerMaxHP);
+    }
 
     void StartSetting()
     {
+        ChangeHpBarValue();
         PlayerManager.PManager.PlState = PlayerState.Idle;
         
-        audioSource = GetComponent<AudioSource>();
         plAudio = GetComponent<PlayerAudio>();
         
         rb = gameObject.GetComponent<Rigidbody2D>();

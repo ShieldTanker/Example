@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum PlayerState
 {
@@ -26,6 +27,24 @@ public class PlayerManager : MonoBehaviour
     private static PlayerState plState;
     private static PlayerBattleState plBattleState;
 
+    private float hp;
+    public float HP
+    {
+        get
+        {
+            return hp;
+        }
+        set
+        {
+            if (value <= 0)
+            {
+                hp = 0f;
+            }
+            hp = value;
+        }
+    }
+
+    public Slider lifeBar;
 
     // 플레이어 상태 저장
     public PlayerState PlState
@@ -88,15 +107,8 @@ public class PlayerManager : MonoBehaviour
         Application.targetFrameRate = 60;
     }
 
-    private void Update()
+    public void PlayerHpBarChange(float playerHp, float maxHp)
     {
-        if (PlBattleState == PlayerBattleState.Die)
-        {
-            Debug.Log("Die");
-        }
-        else
-        {
-            Debug.Log(PlBattleState);
-        }
+        lifeBar.value = playerHp / maxHp;
     }
 }

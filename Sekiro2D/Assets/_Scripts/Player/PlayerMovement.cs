@@ -21,7 +21,7 @@ public class PlayerMovement : MonoBehaviour
     public float wallJumpTime;
 
     public float moveSpeed;
-    private float moveX;
+    public float moveX;
     public static float inputX;
 
     public float fallingSpeed;
@@ -35,14 +35,18 @@ public class PlayerMovement : MonoBehaviour
     // 오른쪽 센서
     public Transform senseTopRight;
     public static bool rTopWall;
+    public static bool rTopGround;
     public Transform senseLowRight;
     public static bool rLowWall;
+    public static bool rLowGround;
 
     // 왼쪽 센서
     public Transform senseTopLeft;
     public static bool lTopWall;
+    public static bool lTopGround;
     public Transform senseLowLeft;
     public static bool lLowWall;
+    public static bool lLowGround;
 
     public LayerMask wallLayer;
     public float wallSensorSize;
@@ -68,9 +72,9 @@ public class PlayerMovement : MonoBehaviour
         {
             UpdateParameter();
 
-            KeyInput();
-
             CheckUpdate();
+
+            KeyInput();
 
             if (lastPlState != plState)
                 lastPlState = plState;
@@ -79,11 +83,13 @@ public class PlayerMovement : MonoBehaviour
 
     public void KeyInput()
     {
-        if (plBattleState == PlayerBattleState.Attack || plBattleState == PlayerBattleState.Farrying)
+        if (plBattleState == PlayerBattleState.Attack ||
+            plBattleState == PlayerBattleState.Farrying)
             rb.velocity = Vector2.zero;
         else
         {
             MovePosX();
+            LimitCheck();
 
             // 입력이 있을시
             if (Input.GetButton("Horizontal"))
@@ -133,7 +139,7 @@ public class PlayerMovement : MonoBehaviour
     }
     void WallJump(Vector2 wayVec)
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && wallLayer != grdCheckLayerMask)
         {
             isWallJump = true;
             Invoke("FalseWallJump", wallJumpTime);
@@ -174,8 +180,9 @@ public class PlayerMovement : MonoBehaviour
     void CheckUpdate()
     {
         GroundCheck();
-        WallCheck();
-        LimitCheck();
+        GroundWallSense();
+        WallSenseCheck();
+
         CheckWallSlide();
         CheckFallingState();
 
@@ -189,23 +196,35 @@ public class PlayerMovement : MonoBehaviour
         {
             moveX = 0f;
         }
+        else if ((inputX > 0 && (rTopGround || rLowGround)) ||
+            (inputX < 0 && (lTopGround || lLowGround)))
+        {
+            moveX = 0f;
+        }
     }
     public void GroundCheck()
     {
         ground = Physics2D.OverlapCircle(
             grdCheckPoint.position, grdCheckSize, grdCheckLayerMask);
     }
-    bool CheckPosition(bool wallCheck, Transform senssPos)
+    bool CheckWall(bool wallCheck, Transform sensePos, LayerMask layer)
     {
-        wallCheck = Physics2D.OverlapCircle(senssPos.position, wallSensorSize, wallLayer);
+        wallCheck = Physics2D.OverlapCircle(sensePos.position, wallSensorSize, layer);
         return wallCheck;
     }
-    public void WallCheck()
+    public void WallSenseCheck()
     {
-        rTopWall= CheckPosition(rTopWall,senseTopRight);
-        rLowWall = CheckPosition(rLowWall, senseLowRight);
-        lTopWall = CheckPosition(lTopWall, senseTopLeft);
-        lLowWall = CheckPosition(lLowWall, senseLowLeft);
+        rTopWall= CheckWall(rTopWall,senseTopRight, wallLayer);
+        rLowWall = CheckWall(rLowWall, senseLowRight, wallLayer);
+        lTopWall = CheckWall(lTopWall, senseTopLeft, wallLayer);
+        lLowWall = CheckWall(lLowWall, senseLowLeft, wallLayer);
+    }
+    public void GroundWallSense()
+    {
+        rTopGround= CheckWall(rTopGround, senseTopRight, grdCheckLayerMask);
+        rLowGround = CheckWall(rLowGround, senseLowRight, grdCheckLayerMask);
+        lTopGround = CheckWall(lTopGround, senseTopLeft, grdCheckLayerMask);
+        lLowGround = CheckWall(lLowGround, senseLowLeft, grdCheckLayerMask);
     }
     void CheckFallingState()
     {
@@ -235,6 +254,7 @@ public class PlayerMovement : MonoBehaviour
         plState = PlayerManager.PManager.PlState;
         plBattleState = PlayerManager.PManager.PlBattleState;
     }
+
     // 범위 확인용
     private void OnDrawGizmos()
     {

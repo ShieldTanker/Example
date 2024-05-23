@@ -15,6 +15,25 @@ public enum EnemyBattleState
 
 public class EnemyBattle : MonoBehaviour
 {
+    // 목적지
+    public Transform[] wayPoints;
+    int pointIdx;
+    public float disForPlayer;
+
+    public Transform enemyRayPos;
+    public Transform playerRayPos;
+
+
+    // 플레이어
+    public GameObject player;
+    PlayerBattleState pBState;
+
+    // 본인 오브젝트
+    public float moveSpeed;
+
+    float delayAttack;
+    public float initAttackDelay;
+
     public EnemyBattleState enemyBattleState;
     EnemyBattleState lastEBS;
 
@@ -32,6 +51,18 @@ public class EnemyBattle : MonoBehaviour
     public LayerMask playerLayer;
     public Vector2 atkBoxSize;
     
+    // 최대감지 거리
+    public float maxDistance;
+    // 현재거리
+    float currentDistance;
+    // 목표와의 거리
+    float waypointDistance;
+    // 정지 거리
+    public float stopPos;
+
+    Vector2 checkDir;
+    RaycastHit2D hit;
+
     // 공격 관련
     public float atkDamage;
     public float enemyAtkTime;
@@ -55,6 +86,14 @@ public class EnemyBattle : MonoBehaviour
 
     private void Update()
     {
+        TimeCheck();
+
+        DistanceCheck();
+
+        CheckPlayer();
+
+        AttackDelay();
+
         EnemyBattleAnimUpdate(enemyBattleState);
     }
 
@@ -127,6 +166,7 @@ public class EnemyBattle : MonoBehaviour
         else
         {   // 사망
             enemyBattleState = EnemyBattleState.Die;
+            hpBar.gameObject.SetActive(false);
         }
     }
 
@@ -177,5 +217,105 @@ public class EnemyBattle : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(enemyAtkPoint.position, atkBoxSize);
+    }
+
+    // 타이머
+    void TimeCheck()
+    {
+        if (delayAttack > 0)
+            delayAttack -= Time.deltaTime;
+    }
+    void AttackDelay()
+    {
+        if (pBState != PlayerBattleState.Die)
+        {
+            if (currentDistance <= 1.8 && enemyAnim.GetBool("PlayerCheck") &&
+                delayAttack <= 0 && !EnemyBattle.isFarryed && enemyBattleState != EnemyBattleState.Die)
+            {
+                enemyAnim.SetTrigger("EnemyAttack");
+                delayAttack = initAttackDelay;
+            }
+        }
+    }
+
+    // 체크
+    void CheckPlayer()
+    {
+        if (pBState != PlayerBattleState.Die)
+        {
+            checkDir = playerRayPos.position - enemyRayPos.position;
+
+            Vector3 checkRay = maxDistance * checkDir.normalized;
+            Debug.DrawRay(enemyRayPos.position, checkRay, Color.red);
+
+            hit = Physics2D.Raycast(enemyRayPos.position, checkDir, maxDistance, playerLayer);
+            if (hit.collider != null)
+            {
+                if (hit.collider.gameObject.tag == "Player")
+                    enemyAnim.SetBool("PlayerCheck", true);
+                else
+                    enemyAnim.SetBool("PlayerCheck", false);
+            }
+            else
+                enemyAnim.SetBool("PlayerCheck", false);
+        }
+        else
+        {
+            enemyAnim.SetBool("playerDie", true);
+        }
+    }
+    void DistanceCheck()
+    {
+        currentDistance = Vector2.Distance(player.transform.position, transform.position);
+        enemyAnim.SetFloat("playerChkDis", currentDistance);
+
+        waypointDistance = Vector2.Distance(transform.position, wayPoints[pointIdx].position);
+        enemyAnim.SetFloat("distanceForPoint", waypointDistance);
+    }
+
+    // 이동
+    public void GoToWayPoint()
+    {
+        transform.position = Vector3.MoveTowards(transform.position, wayPoints[pointIdx].position, moveSpeed * Time.deltaTime);
+        CalcVec(wayPoints[pointIdx]);
+    }
+    public void GoToTarget()
+    {
+        if (pBState != PlayerBattleState.Die)
+        {
+            CalcVec(player.transform);
+
+            Vector3 dir = player.transform.position;
+
+            if (currentDistance >= stopPos)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, dir, moveSpeed * Time.deltaTime);
+            }
+        }
+    }
+    public void WayPointSet()
+    {
+        switch (pointIdx)
+        {
+            case 0:
+                pointIdx = 1;
+                break;
+            case 1:
+                pointIdx = 0;
+                break;
+            default:
+                break;
+        }
+    }
+
+    // 방향 계산
+    void CalcVec(Transform vecWay)
+    {
+        float vecX = vecWay.position.x - transform.position.x;
+
+        if (vecX > 1)
+            transform.localScale = new Vector3(1, 1, 1);
+        else if (vecX < 0)
+            transform.localScale = new Vector3(-1, 1, 1);
     }
 }

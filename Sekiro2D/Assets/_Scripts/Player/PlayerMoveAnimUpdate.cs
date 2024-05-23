@@ -139,7 +139,6 @@ public class PlayerMoveAnimUpdate : MonoBehaviour
                 break;
 
             case PlayerState.Jump:
-                Debug.Log("Jump");
                 playerAnim.SetTrigger("isJump");
                 break;
 
