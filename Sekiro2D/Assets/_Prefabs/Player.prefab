@@ -41,7 +41,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7710589625875268240}
   m_Layer: 11
-  m_Name: RayPos
+  m_Name: PRayPos
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -11,6 +11,11 @@ public class CameraManager : MonoBehaviour
 
     private float dis;
 
+    private void Start()
+    {
+        playerPosition = GameObject.Find("Player").transform;
+        cusorPosition = GameObject.Find("Cusor").transform;
+    }
     private void LateUpdate()
     {
         float mPosX = cusorPosition.transform.position.x - playerPosition.position.x;

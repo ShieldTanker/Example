@@ -98,6 +98,7 @@ public class PlayerMoveAnimUpdate : MonoBehaviour
     void StartSetting()
     {
         playerAnim = GetComponent<Animator>();
+        cusorPos = GameObject.Find("Cusor").transform;
     }
 
     private void GroundAnimCheck(bool grdCheck)

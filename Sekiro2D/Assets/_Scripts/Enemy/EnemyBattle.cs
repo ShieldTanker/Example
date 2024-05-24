@@ -60,7 +60,7 @@ public class EnemyBattle : MonoBehaviour
     // 정지 거리
     public float stopPos;
 
-    Vector2 checkDir;
+    public Vector2 checkDir;
     RaycastHit2D hit;
 
     // 공격 관련
@@ -86,6 +86,10 @@ public class EnemyBattle : MonoBehaviour
 
     private void Update()
     {
+        if (lastEBS == EnemyBattleState.Die)
+        {
+            return;
+        }
         TimeCheck();
 
         DistanceCheck();
@@ -211,6 +215,9 @@ public class EnemyBattle : MonoBehaviour
     void StartSetting()
     {
         audioSource = GetComponent<AudioSource>();
+        enemyRayPos = GameObject.Find("ERayPos").transform;
+        playerRayPos = GameObject.Find("PRayPos").transform;
+        player = GameObject.FindWithTag("Player");
     }
 
     private void OnDrawGizmos()

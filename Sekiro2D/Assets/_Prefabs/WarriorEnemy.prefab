@@ -508,8 +508,6 @@ MonoBehaviour:
   playerRayPos: {fileID: 0}
   player: {fileID: 0}
   moveSpeed: 4
-  maxDistance: 5.5
-  stopPos: 1.2
   initAttackDelay: 1
   enemyBattleState: 0
   enemyAnim: {fileID: 1181090360780334985}
@@ -521,6 +519,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2048
   atkBoxSize: {x: 2, y: 2}
+  maxDistance: 5.5
+  stopPos: 1.2
+  checkDir: {x: 0, y: 0}
   atkDamage: 1
   enemyAtkTime: 2
   knockBackForce: 5
@@ -673,7 +674,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1181090360819627213}
   m_Layer: 10
-  m_Name: RayPos
+  m_Name: ERayPos
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

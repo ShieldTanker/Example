@@ -92,7 +92,7 @@ public class PlayerMovement : MonoBehaviour
             LimitCheck();
 
             // 입력이 있을시
-            if (Input.GetButton("Horizontal"))
+            if (Input.GetButton("Horizontal") && plBattleState != PlayerBattleState.Hit)
             {
                 if (!isWallJump)
                 {
@@ -122,6 +122,10 @@ public class PlayerMovement : MonoBehaviour
         {
             PlayerManager.PManager.PlState = PlayerState.Jump;
             rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
+        }
+        else if (!ground)
+        {
+            PlayerManager.PManager.PlState = PlayerState.Falling;
         }
     }
     void InputWallJump()
