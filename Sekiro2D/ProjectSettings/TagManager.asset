@@ -13,7 +13,7 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - BackGround
   - Water
   - UI
   - Wall
@@ -46,7 +46,10 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Background
+  - name: New Layer 6
+    uniqueID: 424376967
+    locked: 0
+  - name: Ground
     uniqueID: 1136273209
     locked: 0
   - name: BackgroundObject

@@ -135,6 +135,7 @@ public class EnemyBattle : MonoBehaviour
     void FalseFarryed()
     {
         isFarryed = false;
+        enemyBattleState = EnemyBattleState.Idle;
     }
 
     // 공격시 닿은 물체 확인
@@ -193,7 +194,7 @@ public class EnemyBattle : MonoBehaviour
                 break;
 
             case EnemyBattleState.Farryed:
-                enemyAnim.SetTrigger("FarryedAttack");
+                    enemyAnim.SetTrigger("FarryedAttack");
                 break;
 
             case EnemyBattleState.Hurt:
@@ -215,7 +216,6 @@ public class EnemyBattle : MonoBehaviour
     void StartSetting()
     {
         audioSource = GetComponent<AudioSource>();
-        enemyRayPos = GameObject.Find("ERayPos").transform;
         playerRayPos = GameObject.Find("PRayPos").transform;
         player = GameObject.FindWithTag("Player");
     }
