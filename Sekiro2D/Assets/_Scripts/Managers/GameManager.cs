@@ -72,4 +72,9 @@ public class GameManager : MonoBehaviour
         Debug.Log("º¼·ı ÀúÀå");
         lastVol = volumeSlider.value;
     }
+
+    public void GoToTitle()
+    {
+        SceneManager.LoadScene("Menu");
+    }
 }
