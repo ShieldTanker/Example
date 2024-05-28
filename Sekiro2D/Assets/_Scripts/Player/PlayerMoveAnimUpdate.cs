@@ -10,6 +10,7 @@ public class PlayerMoveAnimUpdate : MonoBehaviour
     public Animator playerAnim;
 
     public PlayerBattle pB;
+    public PlayerManager pM;
 
     // 플레이어 상태
     public PlayerState plState;
@@ -116,11 +117,11 @@ public class PlayerMoveAnimUpdate : MonoBehaviour
     {
         if (rightTopSen && !grdCheck)
         {
-            PlayerManager.PManager.PlState = PlayerState.WallSlideRight;
+            pM.PManager.PlState = PlayerState.WallSlideRight;
         }
         else if (leftTopSen && !grdCheck)
         {
-            PlayerManager.PManager.PlState = PlayerState.WallSlideLeft;
+            pM.PManager.PlState = PlayerState.WallSlideLeft;
         }
     }
 
@@ -165,8 +166,8 @@ public class PlayerMoveAnimUpdate : MonoBehaviour
     void UpdateParameter()
     {
         // 상태 관련
-        plState = PlayerManager.PManager.PlState;
-        plBattleState = PlayerManager.PManager.PlBattleState;
+        plState = pM.PManager.PlState;
+        plBattleState = pM.PManager.PlBattleState;
 
         inputX = PlayerMovement.inputX;
         grdCheck = PlayerMovement.Ground;

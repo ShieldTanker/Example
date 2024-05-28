@@ -7,6 +7,8 @@ public class CameraManager : MonoBehaviour
     public Transform playerPosition;
     public Transform cusorPosition;
 
+    public FallZone fallZone;
+
     public float camYPos;
 
     private float dis;
@@ -18,12 +20,15 @@ public class CameraManager : MonoBehaviour
     }
     private void LateUpdate()
     {
-        float mPosX = cusorPosition.transform.position.x - playerPosition.position.x;
-        mPosX = Mathf.Clamp(mPosX, -2, +2);
+        if (!fallZone.isFall)
+        {
+            float mPosX = cusorPosition.transform.position.x - playerPosition.position.x;
+            mPosX = Mathf.Clamp(mPosX, -2, +2);
 
-        float yDis = playerPosition.transform.position.y + camYPos;
+            float yDis = playerPosition.transform.position.y + camYPos;
 
-        dis = playerPosition.transform.position.x + mPosX;
-        transform.position = new Vector3(dis, yDis, transform.position.z);
+            dis = playerPosition.transform.position.x + mPosX;
+            transform.position = new Vector3(dis, yDis, transform.position.z);
+        }
     }
 }

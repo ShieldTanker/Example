@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class PlayerAudio : MonoBehaviour
 {
-    public AudioSource audioSource;
+    public AudioSource battleAudioSource;
+    public AudioSource moveAudioSource;
     
     public AudioClip footStep;
+    public AudioClip jumpSound;
     
     public AudioClip[] farrySound;
     public AudioClip guardSound;
@@ -24,28 +26,35 @@ public class PlayerAudio : MonoBehaviour
     {
         // 오디오 재생
         int randomIdx = Random.Range(0, 2);
-        audioSource.clip = farrySound[randomIdx];
+        battleAudioSource.clip = farrySound[randomIdx];
 
-        audioSource.Play();
+        battleAudioSource.Play();
     }
 
     public void FootStepSound()
     {
-        audioSource.clip = footStep;
-        audioSource.Play();
+        moveAudioSource.clip = footStep;
+        moveAudioSource.Play();
+    }
+    public void JumpSound()
+    {
+        moveAudioSource.clip = jumpSound;
+        moveAudioSource.Play();
     }
     public void GuardSound()
     {
-        audioSource.clip = guardSound;
-        audioSource.Play();
+        battleAudioSource.clip = guardSound;
+        battleAudioSource.Play();
     }
     public void HurtSound()
     {
-        audioSource.clip = hurtSound;
-        audioSource.Play();
+        battleAudioSource.clip = hurtSound;
+        battleAudioSource.Play();
     }
 
     private void StartSetting()
     {
+        battleAudioSource.volume = PlayerPrefs.GetFloat("Volume");
+        moveAudioSource.volume = PlayerPrefs.GetFloat("Volume");
     }
 }

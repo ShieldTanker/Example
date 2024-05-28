@@ -8,6 +8,7 @@ public class PlayerBattle : MonoBehaviour
     // 애니메이션
     public Animator playerAnim;
 
+    public PlayerManager pM;
 
     // 사운드
     private PlayerAudio plAudio;
@@ -54,7 +55,7 @@ public class PlayerBattle : MonoBehaviour
         {
             isGround = PlayerMovement.Ground;
 
-            pState = PlayerManager.PManager.PlBattleState;
+            pState = pM.PManager.PlBattleState;
 
             KeyInput();
 
@@ -106,7 +107,7 @@ public class PlayerBattle : MonoBehaviour
             attackCombo = ActionCombo(attackCombo,2);
 
             // 플레이어 상태
-            PlayerManager.PManager.PlBattleState = PlayerBattleState.Attack;
+            pM.PManager.PlBattleState = PlayerBattleState.Attack;
         }
     }
     private void ResetAttackComboTimeCount(float resetTime)
@@ -146,13 +147,13 @@ public class PlayerBattle : MonoBehaviour
     IEnumerator GuardOrFarry()
     {
         SetAnimationGuard();
-        PlayerManager.PManager.PlBattleState = PlayerBattleState.Farrying;
+        pM.PManager.PlBattleState = PlayerBattleState.Farrying;
 
         yield return new WaitForSeconds(resetFarryTime);
 
         if (inputGuard)
         {
-            PlayerManager.PManager.PlBattleState = PlayerBattleState.Guard;
+            pM.PManager.PlBattleState = PlayerBattleState.Guard;
         }
     }
     public void Farryed()
@@ -190,13 +191,13 @@ public class PlayerBattle : MonoBehaviour
 
         if (playerHp > 0)
         {
-            PlayerManager.PManager.PlBattleState = PlayerBattleState.Hit;
+            pM.PManager.PlBattleState = PlayerBattleState.Hit;
 
             plAudio.HurtSound();
         }
         else
         {
-            PlayerManager.PManager.PlBattleState = PlayerBattleState.Die;
+            pM.PManager.PlBattleState = PlayerBattleState.Die;
         }
     }
     public IEnumerator KnockBack(Transform enemy, float knockBackForce, float knockBackTime)
@@ -257,20 +258,20 @@ public class PlayerBattle : MonoBehaviour
     // 애니메이션 Add Event 에 넣어짐
     public void SetStateIdle()
     {
-        PlayerManager.PManager.PlBattleState = PlayerBattleState.Idle;
+        pM.PManager.PlBattleState = PlayerBattleState.Idle;
 
         isAttack = false;
         inputGuard = false;
     }
     void ChangeHpBarValue()
     {
-        PlayerManager.PManager.PlayerHpBarChange(playerHp, playerMaxHP);
+        pM.PManager.PlayerHpBarChange(playerHp, playerMaxHP);
     }
 
     void StartSetting()
     {
         ChangeHpBarValue();
-        PlayerManager.PManager.PlState = PlayerState.Idle;
+        pM.PManager.PlState = PlayerState.Idle;
         
         plAudio = GetComponent<PlayerAudio>();
         

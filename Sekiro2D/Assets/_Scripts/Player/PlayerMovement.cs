@@ -6,6 +6,9 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    PlayerAudio pA;
+    public PlayerManager pM;
+
 
     // 플레이어 상태
     PlayerState plState;
@@ -97,7 +100,7 @@ public class PlayerMovement : MonoBehaviour
                 if (!isWallJump)
                 {
                     rb.velocity = new Vector2(moveX, rb.velocity.y);
-                    PlayerManager.PManager.PlState = PlayerState.Move;
+                    pM.PManager.PlState = PlayerState.Move;
                 }
             }
             else if(ground &&
@@ -105,7 +108,7 @@ public class PlayerMovement : MonoBehaviour
                     plBattleState != PlayerBattleState.Hit))
             {
                 rb.velocity = new Vector2(0, rb.velocity.y);
-                PlayerManager.PManager.PlState = PlayerState.Idle;
+                pM.PManager.PlState = PlayerState.Idle;
             }
             // 벽점프
             InputWallJump();
@@ -120,12 +123,13 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && ground)
         {
-            PlayerManager.PManager.PlState = PlayerState.Jump;
+            pA.JumpSound();
+            pM.PManager.PlState = PlayerState.Jump;
             rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
         }
         else if (!ground)
         {
-            PlayerManager.PManager.PlState = PlayerState.Falling;
+            pM.PManager.PlState = PlayerState.Falling;
         }
     }
     void InputWallJump()
@@ -145,11 +149,12 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && wallLayer != grdCheckLayerMask)
         {
+            pA.JumpSound();
             isWallJump = true;
             Invoke("FalseWallJump", wallJumpTime);
 
             isWallSlide = false;
-            PlayerManager.PManager.PlState = PlayerState.Jump;
+            pM.PManager.PlState = PlayerState.Jump;
 
             Vector2 wallJump = (Vector2.up + wayVec) * jumpForce;
             wallJump.Normalize();
@@ -236,7 +241,7 @@ public class PlayerMovement : MonoBehaviour
             (plState != PlayerState.WallSlideLeft || plState != PlayerState.WallSlideRight))
         {
             isWallSlide = false;
-            PlayerManager.PManager.PlState = PlayerState.Falling;
+            pM.PlState = PlayerState.Falling;
         }
     }
     void CheckWallSlide()
@@ -250,13 +255,14 @@ public class PlayerMovement : MonoBehaviour
     // 세팅 메소드
     void StartSetting()
     {
+        pA = GetComponent<PlayerAudio>();
         rb = GetComponent<Rigidbody2D>();
         moveX = transform.position.x;
     }
     void UpdateParameter()
     {
-        plState = PlayerManager.PManager.PlState;
-        plBattleState = PlayerManager.PManager.PlBattleState;
+        plState = pM.PManager.PlState;
+        plBattleState = pM.PManager.PlBattleState;
     }
 
     // 범위 확인용

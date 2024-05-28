@@ -509,6 +509,7 @@ MonoBehaviour:
   player: {fileID: 0}
   moveSpeed: 4
   initAttackDelay: 1
+  noStiffTime: 0.3
   enemyBattleState: 0
   enemyAnim: {fileID: 1181090360780334985}
   hurtSound: {fileID: 8300000, guid: c97bbe4b82f3cb547a111dc3200a0fa3, type: 3}
@@ -522,7 +523,7 @@ MonoBehaviour:
   maxDistance: 5.5
   stopPos: 1.2
   checkDir: {x: 0, y: 0}
-  atkDamage: 1
+  atkDamage: 10
   enemyAtkTime: 2
   knockBackForce: 5
   playerKnocBackTime: 0.3

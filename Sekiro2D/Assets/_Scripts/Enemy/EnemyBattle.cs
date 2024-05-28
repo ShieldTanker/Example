@@ -33,6 +33,7 @@ public class EnemyBattle : MonoBehaviour
 
     float delayAttack;
     public float initAttackDelay;
+    public float noStiffTime;
 
     public EnemyBattleState enemyBattleState;
     EnemyBattleState lastEBS;
@@ -109,7 +110,7 @@ public class EnemyBattle : MonoBehaviour
         if (playerColl != null)
         {
             PlayerBattle pB = playerColl.GetComponent<PlayerBattle>();
-            PlayerBattleState pS = PlayerManager.PManager.PlBattleState;
+            PlayerBattleState pS = pB.pM.PManager.PlBattleState;
 
             if (pS == PlayerBattleState.Farrying)
             {   // 플레이어가 패링상태일때
@@ -167,6 +168,7 @@ public class EnemyBattle : MonoBehaviour
         if (enemyHp > 0)
         {   // 피격
             enemyBattleState = EnemyBattleState.Hurt;
+            Invoke("SetStateIdle", noStiffTime);
         }
         else
         {   // 사망
@@ -174,7 +176,10 @@ public class EnemyBattle : MonoBehaviour
             hpBar.gameObject.SetActive(false);
         }
     }
-
+    void SetStateIdle()
+    {
+        enemyBattleState = EnemyBattleState.Idle;
+    }
 
     void EnemyBattleAnimUpdate(EnemyBattleState eBS)
     {
@@ -216,6 +221,8 @@ public class EnemyBattle : MonoBehaviour
     void StartSetting()
     {
         audioSource = GetComponent<AudioSource>();
+        audioSource.volume = PlayerPrefs.GetFloat("Volume");
+
         playerRayPos = GameObject.Find("PRayPos").transform;
         player = GameObject.FindWithTag("Player");
     }

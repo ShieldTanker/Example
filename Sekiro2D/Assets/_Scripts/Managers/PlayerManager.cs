@@ -23,9 +23,11 @@ public enum PlayerBattleState
 }
 public class PlayerManager : MonoBehaviour
 {
-    private static PlayerManager pManager;
-    private static PlayerState plState;
-    private static PlayerBattleState plBattleState;
+    private PlayerManager pManager;
+    private PlayerState plState;
+    private PlayerBattleState plBattleState;
+
+    public StageManager sM;
 
     private float hp;
     public float HP
@@ -70,8 +72,9 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+
     // PlayerManager ΩÃ±€≈Ê
-    public static PlayerManager PManager
+    public PlayerManager PManager
     {
         get
         {
@@ -101,12 +104,30 @@ public class PlayerManager : MonoBehaviour
         {
             pManager = this;
         }
-        
-        DontDestroyOnLoad(gameObject);
-
-        Application.targetFrameRate = 60;
     }
 
+
+
+    private void Start()
+    {
+        lifeBar = GameObject.Find("PlayerLifeBar").GetComponent<Slider>();
+    }
+
+    private void Update()
+    {
+        CheckPlayerDie();
+    }
+
+    void CheckPlayerDie()
+    {
+        if (plBattleState != PlayerBattleState.Die)
+        {
+            return;
+        }
+        sM.ShowGameOver();
+    }
+
+    // √º∑¬ ∫Ø»≠ ¿÷¿ªΩ√
     public void PlayerHpBarChange(float playerHp, float maxHp)
     {
         lifeBar.value = playerHp / maxHp;

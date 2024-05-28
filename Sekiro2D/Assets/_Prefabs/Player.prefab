@@ -294,7 +294,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 76712179
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 627254388, guid: e4827ec59353d1b44b53a1a65b3d4623, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -322,6 +322,7 @@ MonoBehaviour:
   cusorPos: {fileID: 0}
   playerAnim: {fileID: 7710589627496758479}
   pB: {fileID: 7710589627739159129}
+  pM: {fileID: 0}
   plState: 0
   plBattleState: 0
 --- !u!95 &7710589627496758479
@@ -511,6 +512,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 974bffa6b1d8edd4ca8a77fe0d50f48c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pM: {fileID: 0}
   isWallSlide: 0
   jumpForce: 6.5
   wallJumpForce: 9
@@ -544,10 +546,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerAnim: {fileID: 7710589627496758479}
+  pM: {fileID: 0}
   pState: 0
   playerHp: 100
   playerMaxHP: 100
-  atkDamage: 2
+  atkDamage: 15
   isAttack: 0
   resetComboTime: 0.8
   delayAttackTime: 0.6
@@ -574,8 +577,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7cada25428a3fd469cd2e86184c3a9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioSource: {fileID: 7710589627739159128}
+  battleAudioSource: {fileID: 7710589627739159128}
+  moveAudioSource: {fileID: 7710589627496758477}
   footStep: {fileID: 8300000, guid: ada024810fd950d408257d2b4903e899, type: 3}
+  jumpSound: {fileID: 8300000, guid: 47e5a84e034fb9f4d83b3c5e4f07742f, type: 3}
   farrySound:
   - {fileID: 8300000, guid: 3d886e5c082fea148b3eb5fe770ef5d1, type: 3}
   - {fileID: 8300000, guid: 01994f4c76a978049a1fb93047c9bd67, type: 3}
