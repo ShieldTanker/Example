@@ -31,9 +31,7 @@ public class EnemyBattle : MonoBehaviour
     // 본인 오브젝트
     public float moveSpeed;
 
-    float delayAttack;
-    public float initAttackDelay;
-    public float noStiffTime;
+   
 
     public EnemyBattleState enemyBattleState;
     EnemyBattleState lastEBS;
@@ -69,6 +67,10 @@ public class EnemyBattle : MonoBehaviour
     public float enemyAtkTime;
     public float knockBackForce;
     public float playerKnocBackTime;
+
+    float delayAttack;
+    public float initAttackDelay;
+    public float noStiffTime;
 
     // 전투 상태 관련
     public static bool isFarryed;
@@ -118,6 +120,7 @@ public class EnemyBattle : MonoBehaviour
                 enemyBattleState = EnemyBattleState.Farryed;
 
                 isFarryed = true;
+                delayAttack = FarryDelay;
                 Invoke("FalseFarryed", FarryDelay);
 
             }

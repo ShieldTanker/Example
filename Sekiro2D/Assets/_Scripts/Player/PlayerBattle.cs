@@ -247,6 +247,7 @@ public class PlayerBattle : MonoBehaviour
                 break;
             case PlayerBattleState.Die:
                 playerAnim.SetTrigger("isDie");
+                pM.CheckPlayerDie();
                 break;
             default:
                 break;
@@ -263,7 +264,7 @@ public class PlayerBattle : MonoBehaviour
         isAttack = false;
         inputGuard = false;
     }
-    void ChangeHpBarValue()
+    public void ChangeHpBarValue()
     {
         pM.PManager.PlayerHpBarChange(playerHp, playerMaxHP);
     }

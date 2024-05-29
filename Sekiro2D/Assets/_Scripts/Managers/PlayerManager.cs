@@ -118,7 +118,7 @@ public class PlayerManager : MonoBehaviour
         CheckPlayerDie();
     }
 
-    void CheckPlayerDie()
+    public void CheckPlayerDie()
     {
         if (plBattleState != PlayerBattleState.Die)
         {

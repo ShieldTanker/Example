@@ -6,7 +6,16 @@ using UnityEngine.UI;
 public class BossCleared : MonoBehaviour
 {
     public GameObject actionKeyText;
-    bool isActive;
+    public bool isActive;
+    public PlayerBattle playerBattle;
+
+    public GameObject gotoTitleBtn;
+    public GameObject exitBtn;
+
+    private void Start()
+    {
+        playerBattle = GameObject.Find("Player").GetComponent<PlayerBattle>();
+    }
 
     private void Update()
     {
@@ -14,7 +23,12 @@ public class BossCleared : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.F))
             {
-                GameManager.GManager.GoToTitle();
+                gotoTitleBtn.SetActive(true);
+                exitBtn.SetActive(true);
+                actionKeyText.SetActive(false);
+
+                playerBattle.playerHp = playerBattle.playerMaxHP;
+                playerBattle.ChangeHpBarValue();
             }
         }
     }
@@ -34,6 +48,10 @@ public class BossCleared : MonoBehaviour
         {
             Debug.Log("Out");
             actionKeyText.SetActive(false);
+
+            gotoTitleBtn.SetActive(false);
+            exitBtn.SetActive(false);
+
             isActive = false;
         }
     }

@@ -6,6 +6,7 @@ public class CameraManager : MonoBehaviour
 {
     public Transform playerPosition;
     public Transform cusorPosition;
+    public BossCleared bossClear;
 
     public FallZone fallZone;
 
@@ -18,9 +19,10 @@ public class CameraManager : MonoBehaviour
         playerPosition = GameObject.Find("Player").transform;
         cusorPosition = GameObject.Find("Cusor").transform;
     }
+
     private void LateUpdate()
     {
-        if (!fallZone.isFall)
+        if (!fallZone.isFall && !bossClear.isActive)
         {
             float mPosX = cusorPosition.transform.position.x - playerPosition.position.x;
             mPosX = Mathf.Clamp(mPosX, -2, +2);

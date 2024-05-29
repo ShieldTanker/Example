@@ -26,10 +26,11 @@ public class StageManager : MonoBehaviour
     public GameObject gameOverPanel;
 
     public GameObject bossCleared;
+    public GameObject bossClearLabel;
 
-    public void ShowGameOver()
+    public void GoToTitle()
     {
-        gameOverPanel.SetActive(true);
+        GameManager.GManager.GoToTitle();
     }
 
     public void ExitGame()
@@ -39,11 +40,25 @@ public class StageManager : MonoBehaviour
 
     public void RestartStage()
     {
-        GameManager.GManager.RestartBtn();
+        GameManager.GManager.RestartGame();
+    }
+    public void ShowGameOver()
+    {
+        gameOverPanel.SetActive(true);
     }
 
     public void BossClear()
     {
         bossCleared.SetActive(true);
+        StartCoroutine(BossClearTxt());
+    }
+
+    IEnumerator BossClearTxt()
+    {
+        bossClearLabel.SetActive(true);
+
+        yield return new WaitForSeconds(3f);
+
+        bossClearLabel.SetActive(false);
     }
 }

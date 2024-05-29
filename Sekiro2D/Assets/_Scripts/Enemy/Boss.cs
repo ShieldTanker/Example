@@ -5,6 +5,7 @@ using UnityEngine;
 public class Boss : MonoBehaviour
 {
     EnemyBattle eB;
+    EnemyBattle lastEB;
     public StageManager sM;
 
     private void Start()
@@ -14,9 +15,14 @@ public class Boss : MonoBehaviour
 
     private void Update()
     {
+        if (lastEB == eB)
+            return;
+
         if (eB.enemyBattleState == EnemyBattleState.Die)
         {
             sM.SM.BossClear();
+
+            lastEB = eB;
         }
     }
 }
