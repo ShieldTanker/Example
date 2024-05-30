@@ -508,8 +508,6 @@ MonoBehaviour:
   playerRayPos: {fileID: 0}
   player: {fileID: 0}
   moveSpeed: 4
-  initAttackDelay: 1
-  noStiffTime: 0.3
   enemyBattleState: 0
   enemyAnim: {fileID: 1181090360780334985}
   hurtSound: {fileID: 8300000, guid: c97bbe4b82f3cb547a111dc3200a0fa3, type: 3}
@@ -527,6 +525,8 @@ MonoBehaviour:
   enemyAtkTime: 2
   knockBackForce: 5
   playerKnocBackTime: 0.3
+  initAttackDelay: 1
+  noStiffTime: 0.3
   FarryDelay: 1.5
   enemyHp: 100
   enemyMaxHp: 100
@@ -676,7 +676,7 @@ GameObject:
   - component: {fileID: 1181090360819627213}
   m_Layer: 10
   m_Name: ERayPos
-  m_TagString: Enemy
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

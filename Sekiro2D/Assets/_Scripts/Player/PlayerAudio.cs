@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PlayerAudio : MonoBehaviour
 {
+    public GameObject[] enemys;
+    public AudioSource enemyAudio;
+
     public AudioSource battleAudioSource;
     public AudioSource moveAudioSource;
     
@@ -20,7 +23,6 @@ public class PlayerAudio : MonoBehaviour
     {
         StartSetting();
     }
-
 
     public void FarrySound()
     {
@@ -54,6 +56,19 @@ public class PlayerAudio : MonoBehaviour
 
     private void StartSetting()
     {
+        VolumeSetting();
+    }
+
+    public void VolumeSetting()
+    {
+        enemys = GameObject.FindGameObjectsWithTag("Enemy");
+        
+        foreach (var enemy in enemys)
+        {
+            enemyAudio = enemy.GetComponent<AudioSource>();
+            enemyAudio.volume = PlayerPrefs.GetFloat("Volume");
+        }
+
         battleAudioSource.volume = PlayerPrefs.GetFloat("Volume");
         moveAudioSource.volume = PlayerPrefs.GetFloat("Volume");
     }

@@ -69,6 +69,9 @@ public class PlayerBattle : MonoBehaviour
 
     public void KeyInput()
     {
+        if (GameManager.GamePause)
+            return;
+
         if (pState != PlayerBattleState.Hit &&
             pState != PlayerBattleState.Die)
         {

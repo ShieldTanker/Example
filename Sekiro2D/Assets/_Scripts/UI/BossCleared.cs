@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class BossCleared : MonoBehaviour
 {
     public GameObject actionKeyText;
-    public bool isActive;
+    
+    //public bool isActive;
+    
     public PlayerBattle playerBattle;
 
     public GameObject gotoTitleBtn;
@@ -19,7 +20,7 @@ public class BossCleared : MonoBehaviour
 
     private void Update()
     {
-        if (isActive)
+        if (GameManager.StopCam)
         {
             if (Input.GetKeyDown(KeyCode.F))
             {
@@ -39,7 +40,7 @@ public class BossCleared : MonoBehaviour
         {
             Debug.Log("player");
             actionKeyText.SetActive(true);
-            isActive = true;
+            GameManager.StopCam = true;
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
@@ -52,7 +53,7 @@ public class BossCleared : MonoBehaviour
             gotoTitleBtn.SetActive(false);
             exitBtn.SetActive(false);
 
-            isActive = false;
+            GameManager.StopCam = false;
         }
     }
 }

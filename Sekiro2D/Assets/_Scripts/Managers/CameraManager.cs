@@ -22,7 +22,7 @@ public class CameraManager : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (!fallZone.isFall && !bossClear.isActive)
+        if (!fallZone.isFall && !GameManager.StopCam)
         {
             float mPosX = cusorPosition.transform.position.x - playerPosition.position.x;
             mPosX = Mathf.Clamp(mPosX, -2, +2);

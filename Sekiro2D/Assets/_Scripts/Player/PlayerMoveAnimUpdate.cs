@@ -31,20 +31,24 @@ public class PlayerMoveAnimUpdate : MonoBehaviour
 
     private void Update()
     {
-        if (plBattleState != PlayerBattleState.Die)
-        {
-            GroundAnimCheck(grdCheck);
+        if (plBattleState == PlayerBattleState.Die)
+            return;
 
-            WallAnimCheck(PlayerMovement.RightTopSensor, PlayerMovement.LeftTopSensor, grdCheck);
+        if (GameManager.GamePause)
+            return;
 
-            UpdateParameter();
+        GroundAnimCheck(grdCheck);
 
-            PlayerAnimUpdate(plState);
+        WallAnimCheck(PlayerMovement.RightTopSensor, PlayerMovement.LeftTopSensor, grdCheck);
 
-            if (plBattleState != PlayerBattleState.Attack &&
-                plBattleState != PlayerBattleState.Hit)
-                LookCusorRotation();
-        }
+        UpdateParameter();
+
+        PlayerAnimUpdate(plState);
+
+        if (plBattleState != PlayerBattleState.Attack &&
+            plBattleState != PlayerBattleState.Hit)
+            LookCusorRotation();
+
     }
 
 

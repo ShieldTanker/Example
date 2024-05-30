@@ -86,6 +86,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void KeyInput()
     {
+
         if (plBattleState == PlayerBattleState.Attack ||
             plBattleState == PlayerBattleState.Farrying)
             rb.velocity = Vector2.zero;

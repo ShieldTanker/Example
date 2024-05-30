@@ -6,15 +6,18 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    private static GameManager gManager;
-    public static GameManager GManager { get { return gManager; } set { gManager = value; }}
-
-    public GameObject startBtn;
-    public GameObject exitBtn;
     public GameObject settingImg;
 
-    public Slider volumeSlider;
-    float lastVol;
+    private static GameManager gManager;
+    static bool stopCam;
+    static bool gamePause;
+
+
+    public static GameManager GManager { get { return gManager; } set { gManager = value; } }
+    public static bool StopCam { get { return stopCam; } set { stopCam = value; } }
+    public static bool GamePause { get { return gamePause; } set { gamePause = value; } }
+
+
     private void Awake()
     {
         if (gManager == null) { gManager = this; }
@@ -23,48 +26,19 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         Application.targetFrameRate = 60;
-
-        volumeSlider.value = PlayerPrefs.GetFloat("Volume", 1f);
     }
 
+
     // 시작 종료 버튼
-    public void StartBtn()
+    public void StartGame()
     {
         SceneManager.LoadScene("Play");
     }
-    public void ExitBtn()
+    public void ExitGame()
     {
         Application.Quit();
     }
 
-    // 옵션 버튼
-    public void OptionBtnClicked()
-    {
-        startBtn.SetActive(false);
-        exitBtn.SetActive(false);
-        gameObject.SetActive(false);
-
-        settingImg.SetActive(true);
-    }
-    public void CloseOptionBtnClicked()
-    {
-        startBtn.SetActive(true);
-        exitBtn.SetActive(true);
-        gameObject.SetActive(true);
-
-        settingImg.SetActive(false);
-    }
-    public void SaveVolume()
-    {
-        if (lastVol == volumeSlider.value)
-            return;
-
-        PlayerPrefs.SetFloat("Volume", volumeSlider.value);
-        PlayerPrefs.Save();
-
-        Debug.Log("볼륨 저장");
-        lastVol = volumeSlider.value;
-    }
 
     // 인게임 버튼
     public void GoToTitle()
@@ -74,5 +48,20 @@ public class GameManager : MonoBehaviour
     public void RestartGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+
+    // 일시정지,해제
+    public void TimePause()
+    {
+        Time.timeScale = 0f;
+        GamePause = true;
+        StopCam = true;
+    }
+    public void TimePlay()
+    {
+        Time.timeScale = 1f;
+        GamePause = false;
+        StopCam = false;
     }
 }
