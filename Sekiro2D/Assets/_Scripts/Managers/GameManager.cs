@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-    // 시작 종료 버튼
+    // 시작 종료 기능
     public void StartGame()
     {
         SceneManager.LoadScene("Play");
