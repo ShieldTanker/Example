@@ -1,278 +1,370 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
+public enum PlayerState
+{
+    Idle,
+    Move,
+    Jump,
+    Falling,
+    WallSlideRight,
+    WallSlideLeft
+}
 
 public class PlayerMovement : MonoBehaviour
 {
-    PlayerAudio pA;
-    public PlayerManager pM;
-
+    PlayerBattle pB;
+    ObjectAudio pAudio;
+    public AudioSource pAudioSource;
 
     // 플레이어 상태
-    PlayerState plState;
-    PlayerState lastPlState;
-    PlayerBattleState plBattleState;
-    bool isWallJump;
+    [SerializeField] PlayerState pState;
+    public PlayerState PState { get { return pState; } set { pState = value; } }
+    private PlayerState lastPlState;
+    private PlayerBattleState pBState;
+
+    [Space(10)]
     public bool isWallSlide;
+    private bool isWallJump;
 
     // 움직임
-    Rigidbody2D rb;
+    [Space(10)]
     public float jumpForce;
     public float wallJumpForce;
     public float wallJumpTime;
+    private Rigidbody2D rb;
+    private bool zeroVelocity;
 
-    public float moveSpeed;
     public float moveX;
-    public static float inputX;
+    public float moveSpeed;
+    public float guardSpeed;
 
-    public float fallingSpeed;
+    public float inputX;
 
-    // 지형 체크
-    public LayerMask grdCheckLayerMask;
+    public float slideSpeed;
+    IEnumerator falseWallJump;
+
+    #region 지형 체크
+
+    [Space(10)]
+    [Tooltip("감지할 Ground 레이어")] public LayerMask grdLayer;
     public Transform grdCheckPoint;
     public float grdCheckSize;
-    private static bool ground;
 
-    // 오른쪽 센서
-    public Transform senseTopRight;
-    public static bool rTopWall;
-    public static bool rTopGround;
-    public Transform senseLowRight;
-    public static bool rLowWall;
-    public static bool rLowGround;
-
-    // 왼쪽 센서
-    public Transform senseTopLeft;
-    public static bool lTopWall;
-    public static bool lTopGround;
-    public Transform senseLowLeft;
-    public static bool lLowWall;
-    public static bool lLowGround;
-
-    public LayerMask wallLayer;
+    [Space(10)]
+    [Tooltip("감지할 Wall 레이어")] public LayerMask wallLayer;
     public float wallSensorSize;
 
+    // 오른쪽 센서
+    [Space(10)]
+    public Transform sensorTopRight;
+    public Transform sensorLowRight;
+    private bool rTopWall;
+    private bool rTopGround;
+    private bool rLowWall;
+    private bool rLowGround;
 
-    // 센서들 속성
-    public static bool RightTopSensor { get { return rTopWall; } }
-    public static bool RightLowSensor { get { return rLowWall; } }
-    public static bool LeftTopSensor { get { return lTopWall; } }
-    public static bool LeftLowSensor { get { return lLowWall; } }
+    // 왼쪽 센서
+    [Space(10)]
+    public Transform sensorTopLeft;
+    public Transform sensorLowLeft;
+    private bool lTopWall;
+    private bool lTopGround;
+    private bool lLowWall;
+    private bool lLowGround;
 
+    private bool ground;
+    public bool Ground { get { return ground; } }
 
-    public static bool Ground { get { return ground;} }
+    #endregion
+
+/*-----------------------------------------------------------------------------------------------------------------------------------*/
 
     private void Start()
     {
-        StartSetting();
+        pAudio = GetComponent<ObjectAudio>();
+
+        pB = GetComponent<PlayerBattle>();
+        if (pB == null)
+            pB = GetComponentInParent<PlayerBattle>();
+
+        rb = GetComponent<Rigidbody2D>();
+
+        moveX = transform.position.x;
     }
 
     private void Update()
     {
-        if (plBattleState != PlayerBattleState.Die)
+        if (pBState != PlayerBattleState.Die)
         {
-            UpdateParameter();
+            pBState = pB.PBState;
 
-            CheckUpdate();
+            StateUpdate();
 
-            KeyInput();
+            HandleInput();
 
-            if (lastPlState != plState)
-                lastPlState = plState;
+            if (lastPlState != pState)
+                lastPlState = pState;
         }
     }
 
-    public void KeyInput()
+    private void FixedUpdate()
     {
+        CheckUpdate();
+        CharacterVelocity();
+    }
 
-        if (plBattleState == PlayerBattleState.Attack ||
-            plBattleState == PlayerBattleState.Farrying)
-            rb.velocity = Vector2.zero;
-        else
+/*-----------------------------------------------------------------------------------------------------------------------------------*/
+
+    void HandleInput()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            MovePosX();
-            LimitCheck();
+            if (isWallSlide)
+                WallJump(); // 벽 점프 처리
+            else if (ground)
+                Jump(); // 일반 점프 처리
+            pB.SetStateIdle();
+        }
+        // 방향키 입력 처리
+        inputX = Input.GetAxisRaw("Horizontal");
+    }
 
-            // 입력이 있을시
-            if (Input.GetButton("Horizontal") && plBattleState != PlayerBattleState.Hit)
+    public void CharacterVelocity()
+    {
+        if (zeroVelocity)
+            rb.velocity = Vector3.zero;
+
+        MovePosX();
+    }
+
+    void StateUpdate()
+    {
+        if (pBState == PlayerBattleState.Attack)
+            zeroVelocity = true;
+        else
+            zeroVelocity = false;
+
+        if (pBState != PlayerBattleState.Hit)
+        {
+            if (ground)
             {
-                if (!isWallJump)
+                // 입력이 있고 벽점프, 피격상태 가 아닐시
+                if (inputX != 0 && !isWallJump)
+                    pState = PlayerState.Move;
+
+                // 땅에있고 가드, 피격 상태가 아닐시
+                else
                 {
-                    rb.velocity = new Vector2(moveX, rb.velocity.y);
-                    pM.PManager.PlState = PlayerState.Move;
+                    rb.velocity = new Vector2(0, rb.velocity.y);
+                    pState = PlayerState.Idle;
                 }
             }
-            else if(ground &&
-                    (plBattleState != PlayerBattleState.Guard &&
-                    plBattleState != PlayerBattleState.Hit))
-            {
-                rb.velocity = new Vector2(0, rb.velocity.y);
-                pM.PManager.PlState = PlayerState.Idle;
-            }
-            // 벽점프
-            InputWallJump();
-            WallSlideSpeed();
-
-            InputJump();
-        }
-    }
-
-    // 점프관련
-    void InputJump()
-    {
-        if (Input.GetKeyDown(KeyCode.Space) && ground)
-        {
-            pA.JumpSound();
-            pM.PManager.PlState = PlayerState.Jump;
-            rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
-        }
-        else if (!ground)
-        {
-            pM.PManager.PlState = PlayerState.Falling;
-        }
-    }
-    void InputWallJump()
-    {
-        if (!ground)
-        {
-            // 오른쪽 벽일때
-            if (plState == PlayerState.WallSlideRight)
-                WallJump(Vector2.left);
-
-            // 왼쪽 벽일때
-            else if (plState == PlayerState.WallSlideLeft)
-                WallJump(Vector2.right);
-        }
-    }
-    void WallJump(Vector2 wayVec)
-    {
-        if (Input.GetKeyDown(KeyCode.Space) && wallLayer != grdCheckLayerMask)
-        {
-            pA.JumpSound();
-            isWallJump = true;
-            Invoke("FalseWallJump", wallJumpTime);
-
-            isWallSlide = false;
-            pM.PManager.PlState = PlayerState.Jump;
-
-            Vector2 wallJump = (Vector2.up + wayVec) * jumpForce;
-            wallJump.Normalize();
-
-            rb.velocity = wallJump * wallJumpForce;
-        }
-    }
-    
-    // 벽점프 거짓으로 만드는 메소드
-    void FalseWallJump()
-    {
-        isWallJump = false;
-    }
-    
-    // 벽에 닿았을시 속도 감소
-    private void WallSlideSpeed()
-    {
-        if (isWallSlide)
-        {
-            float slowY = rb.velocity.y * fallingSpeed;
-            rb.velocity = new Vector2(rb.velocity.x, slowY);
         }
     }
 
     // 움직임
     void MovePosX()
     {
-        inputX = Input.GetAxisRaw("Horizontal");
         moveX = inputX * moveSpeed;
+
+        BattleMoveSpeed();
+        WallSlideSpeed();
+        LimitCheck();
+
+        // 벽점프 중 이 아니고 입력이 있으며 넉백 상태가 아닐때
+        if (!isWallJump && inputX != 0 && !pB.isKnockBack)
+            rb.velocity = new Vector2(moveX, rb.velocity.y);
     }
 
+    void BattleMoveSpeed()
+    {
+        if (pBState == PlayerBattleState.Attack)
+        {
+            moveX = 0;
+        }
+        else if (pBState == PlayerBattleState.Guard &&
+            !pB.isKnockBack && ground)
+        {
+            moveX = inputX * guardSpeed;
+        }
+    }
+
+    /// <summary>
+    /// 물리 관련 업데이트
+    /// </summary>
     void CheckUpdate()
     {
-        GroundCheck();
-        GroundWallSense();
-        WallSenseCheck();
+        UpdateSensors();
 
-        CheckWallSlide();
+        WallSlideCheck();
+
         CheckFallingState();
-
+        CheckWallSlide();
     }
 
-    // 지형 체크 메소드들
-    void LimitCheck()
-    {
-        if ((inputX > 0 && (rTopWall || rLowWall)) ||
-            (inputX < 0 && (lTopWall || lLowWall)))
-        {
-            moveX = 0f;
-        }
-        else if ((inputX > 0 && (rTopGround || rLowGround)) ||
-            (inputX < 0 && (lTopGround || lLowGround)))
-        {
-            moveX = 0f;
-        }
-    }
-    public void GroundCheck()
-    {
-        ground = Physics2D.OverlapCircle(
-            grdCheckPoint.position, grdCheckSize, grdCheckLayerMask);
-    }
-    bool CheckWall(bool wallCheck, Transform sensePos, LayerMask layer)
-    {
-        wallCheck = Physics2D.OverlapCircle(sensePos.position, wallSensorSize, layer);
-        return wallCheck;
-    }
-    public void WallSenseCheck()
-    {
-        rTopWall= CheckWall(rTopWall,senseTopRight, wallLayer);
-        rLowWall = CheckWall(rLowWall, senseLowRight, wallLayer);
-        lTopWall = CheckWall(lTopWall, senseTopLeft, wallLayer);
-        lLowWall = CheckWall(lLowWall, senseLowLeft, wallLayer);
-    }
-    public void GroundWallSense()
-    {
-        rTopGround= CheckWall(rTopGround, senseTopRight, grdCheckLayerMask);
-        rLowGround = CheckWall(rLowGround, senseLowRight, grdCheckLayerMask);
-        lTopGround = CheckWall(lTopGround, senseTopLeft, grdCheckLayerMask);
-        lLowGround = CheckWall(lLowGround, senseLowLeft, grdCheckLayerMask);
-    }
+    #region 상태 감지 관련
+
     void CheckFallingState()
     {
-        if (!ground && plState != PlayerState.Jump &&
-            (plState != PlayerState.WallSlideLeft || plState != PlayerState.WallSlideRight))
+        // 벽슬라이드나 점프 상태가 아닌데도 공중에 있을때
+        if (!ground && pState != PlayerState.Jump &&
+            !(pState == PlayerState.WallSlideLeft || pState == PlayerState.WallSlideRight))
         {
             isWallSlide = false;
-            pM.PlState = PlayerState.Falling;
+            pState = PlayerState.Falling;
         }
     }
+
     void CheckWallSlide()
     {
-        if (plState == PlayerState.WallSlideRight || plState == PlayerState.WallSlideLeft)
+        if (pState == PlayerState.WallSlideRight || pState == PlayerState.WallSlideLeft)
             isWallSlide = true;
         else
             isWallSlide = false;
     }
     
-    // 세팅 메소드
-    void StartSetting()
+    #endregion
+
+    #region 점프 관련
+    
+    void Jump()
     {
-        pA = GetComponent<PlayerAudio>();
-        rb = GetComponent<Rigidbody2D>();
-        moveX = transform.position.x;
-    }
-    void UpdateParameter()
-    {
-        plState = pM.PManager.PlState;
-        plBattleState = pM.PManager.PlBattleState;
+        pAudio.ChangeSound(pAudioSource, AudioState.JumpSound);
+
+        pState = PlayerState.Jump;
+        rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
     }
 
-    // 범위 확인용
+    void WallJump()
+    {
+        pAudio.ChangeSound(pAudioSource, AudioState.JumpSound);
+
+        isWallJump = true;
+
+        // 설정 시간뒤 병렬로 함수 실행
+        if (falseWallJump != null)
+            StopCoroutine(falseWallJump);
+
+        falseWallJump = FalseWallJump(wallJumpTime);
+
+        StartCoroutine(falseWallJump);
+
+        Vector2 dir = pState == PlayerState.WallSlideRight ? Vector2.left : Vector2.right;
+
+        Vector2 wallJump = new Vector2(dir.x * wallJumpForce, 0.9f * jumpForce);
+        rb.velocity = wallJump;
+
+        isWallSlide = false;
+        pState = PlayerState.Jump;
+    }
+
+    // 벽점프 거짓으로 만드는 코루틴
+    IEnumerator FalseWallJump(float wallJumpTime)
+    {
+        yield return new WaitForSeconds(wallJumpTime);
+        isWallJump = false;
+    }
+
+    #endregion
+
+    #region 벽 감지 관련 메소드
+
+    /// <summary>
+    /// 땅에 닿지 않고 벽에 붙을때 상태 변경
+    /// </summary>
+    private void WallSlideCheck()
+    {
+        if (!ground)
+        {
+            if (rTopWall)
+            { 
+                pState = PlayerState.WallSlideRight;
+                pB.SetStateIdle();
+            }
+            else if (lTopWall)
+            { 
+                pState = PlayerState.WallSlideLeft;
+                pB.SetStateIdle();
+            }
+            else
+                pState = PlayerState.Falling;
+        }
+    }
+
+    /// <summary>
+    /// Wall or Ground 레이어인 벽 닿을시 이동제한
+    /// </summary>
+    void LimitCheck()
+    {
+        // 일반 벽 센서
+        if ((inputX > 0 && (rTopWall || rLowWall)) || (inputX < 0 && (lTopWall || lLowWall)))
+            moveX = 0f;
+
+        // 바닥벽 센서
+        else if ((inputX > 0 && (rTopGround || rLowGround)) || (inputX < 0 && (lTopGround || lLowGround)))
+            moveX = 0f;
+    }
+
+    // 벽에 닿았을시 속도 감소
+    private void WallSlideSpeed()
+    {
+        if (isWallSlide && !isWallJump)
+        {
+            float slowY = rb.velocity.y * slideSpeed;
+            rb.velocity = new Vector2(rb.velocity.x, slowY);
+        }
+    }
+
+    /// <summary>
+    /// 각종 센서들 확인
+    /// </summary>
+    public void UpdateSensors()
+    {
+        // 바닥 감지
+        ground = CheckSensor(ground, grdCheckPoint, grdCheckSize, grdLayer);
+
+        #region 벽감지
+        rTopGround = CheckSensor(rTopGround, sensorTopRight, wallSensorSize, grdLayer);
+        rLowGround = CheckSensor(rLowGround, sensorLowRight, wallSensorSize, grdLayer);
+
+        lTopGround = CheckSensor(lTopGround, sensorTopLeft, wallSensorSize, grdLayer);
+        lLowGround = CheckSensor(lLowGround, sensorLowLeft, wallSensorSize,grdLayer);
+
+        rTopWall = CheckSensor(rTopWall, sensorTopRight, wallSensorSize, wallLayer);
+        rLowWall = CheckSensor(rLowWall, sensorLowRight, wallSensorSize, wallLayer);
+
+        lTopWall = CheckSensor(lTopWall, sensorTopLeft, wallSensorSize, wallLayer);
+        lLowWall = CheckSensor(lLowWall, sensorLowLeft, wallSensorSize, wallLayer);
+        #endregion
+    }
+
+    /// <summary>
+    /// 센서에 감지할 레이어가 닿았는지 확인후 결과값 리턴
+    /// </summary>
+    /// <param name="sensor">센서 닿았는지 확인할 변수</param>
+    /// <param name="sensePos">센서의 위치</param>
+    /// <param name="layer">감지할 레이어</param>
+    /// <returns></returns>
+    bool CheckSensor(bool sensor, Transform sensePos, float wallSensorSize, LayerMask layer)
+    {
+        sensor = Physics2D.OverlapCircle(sensePos.position, wallSensorSize, layer);
+        return sensor;
+    }
+
+    #endregion
+
+    #region 센서 범위 확인용
+
     private void OnDrawGizmos()
     {
-        DrawGizmo(senseTopRight, wallSensorSize);
-        DrawGizmo(senseLowRight, wallSensorSize);
-        DrawGizmo(senseTopLeft, wallSensorSize);
-        DrawGizmo(senseLowLeft, wallSensorSize);
+        DrawGizmo(sensorTopRight, wallSensorSize);
+        DrawGizmo(sensorLowRight, wallSensorSize);
+        DrawGizmo(sensorTopLeft, wallSensorSize);
+        DrawGizmo(sensorLowLeft, wallSensorSize);
 
         DrawGizmo(grdCheckPoint, grdCheckSize);
     }
@@ -280,4 +372,6 @@ public class PlayerMovement : MonoBehaviour
     {
         Gizmos.DrawWireSphere(point.position, wallSensorSize);
     }
+
+    #endregion
 }

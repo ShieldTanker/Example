@@ -6,7 +6,6 @@ public class StartBtn : MonoBehaviour
 {
     public void StartBtnClicked()
     {
-        GameManager.GManager.StartGame();
+        GameManager.GM.StartGame();
     }
-
 }

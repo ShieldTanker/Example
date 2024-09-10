@@ -4,17 +4,27 @@ using UnityEngine;
 
 public class FallZone : MonoBehaviour
 {
-    public bool isFall;
+    public bool IsFall { get; set; }
 
-    public PlayerManager pM;
+    PlayerBattle pB;
+
+/*-----------------------------------------------------------------------------------------------------------------------------------*/
+
+    private void Start()
+    {
+        pB = GameObject.FindWithTag("Player").GetComponent<PlayerBattle>();
+        IsFall = false;
+    }
+
+/*-----------------------------------------------------------------------------------------------------------------------------------*/
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Player")
         {
-            isFall = true;
+            IsFall = true;
 
-            pM.PlBattleState = PlayerBattleState.Die;
+            pB.TakeDamage(pB.maxHp * 2);
 
             collision.gameObject.SetActive(false);
         }

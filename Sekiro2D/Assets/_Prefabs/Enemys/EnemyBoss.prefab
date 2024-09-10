@@ -199,6 +199,8 @@ GameObject:
   - component: {fileID: 2648934449058434479}
   - component: {fileID: 2648934449058434474}
   - component: {fileID: 2648934449058434475}
+  - component: {fileID: 7069913288836646725}
+  - component: {fileID: 6867222488031362779}
   m_Layer: 10
   m_Name: EnemyBoss
   m_TagString: Enemy
@@ -213,7 +215,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2648934449058434467}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 145.04, y: -0.15, z: 3.7760777}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -308,38 +310,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86e4117b6fc11d74a9bb33d42aca5309, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wayPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  disForPlayer: 15
   enemyRayPos: {fileID: 2648934449058434478}
-  playerRayPos: {fileID: 0}
-  player: {fileID: 0}
   moveSpeed: 4
-  initAttackDelay: 3
-  noStiffTime: 1
-  enemyBattleState: 0
-  enemyAnim: {fileID: 2648934449058434464}
-  hurtSound: {fileID: 8300000, guid: c97bbe4b82f3cb547a111dc3200a0fa3, type: 3}
+  enemyPos: {fileID: 0}
+  player: {fileID: 0}
+  playerRayPos: {fileID: 0}
   atkColl: []
   enemyAtkPoint: {fileID: 2648934448756944770}
-  enemy: {fileID: 2648934449058434467}
   playerLayer:
     serializedVersion: 2
     m_Bits: 2048
   atkBoxSize: {x: 2, y: 2}
-  maxDistance: 5.5
   stopPos: 1.2
-  checkDir: {x: 0, y: 0}
+  maxDistance: 5.5
+  wayPoints:
+  - {fileID: 0}
+  - {fileID: 0}
   atkDamage: 5
-  enemyAtkTime: 2
+  initAttackDelay: 1
   knockBackForce: 5
-  playerKnocBackTime: 0.3
-  FarryDelay: 1
-  enemyHp: 1
+  knockBackTime: 0
+  noStiffTime: 5
+  enemyHp: 200
   enemyMaxHp: 200
   hpBar: {fileID: 2648934449699440608}
   hpCanvas: {fileID: 2648934449838798302}
+  enemyBattleState: 0
+  FarryDelay: 2.5
+  isFarryed: 0
 --- !u!70 &2648934449058434476
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -388,7 +386,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -398,9 +396,9 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 15
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 2
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -433,7 +431,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -485,7 +483,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d00363c389965c74594f7d569e170df2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sM: {fileID: 0}
+--- !u!114 &7069913288836646725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2648934449058434467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5672fdf8830d3934cb6fec53753237d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6867222488031362779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2648934449058434467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa0337e5961cd4545aff75c8d142013f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSources:
+  - {fileID: 2648934449058434474}
+  sounds:
+  - {fileID: 8300000, guid: 914f73cbe7448084fa48e78c317c1c2c, type: 3}
+  - {fileID: 8300000, guid: 47e5a84e034fb9f4d83b3c5e4f07742f, type: 3}
+  - {fileID: 8300000, guid: c2a5aaa5161107044ae0807b29f0ff2a, type: 3}
+  - {fileID: 8300000, guid: 48e09a0d746f60d4695684c73a5b1306, type: 3}
+  - {fileID: 8300000, guid: c97bbe4b82f3cb547a111dc3200a0fa3, type: 3}
+  - {fileID: 8300000, guid: fb76138d4018a7c428c976784824a287, type: 3}
 --- !u!1 &2648934449165236354
 GameObject:
   m_ObjectHideFlags: 0

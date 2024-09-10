@@ -13,21 +13,27 @@ public class GameManager : MonoBehaviour
     static bool gamePause;
 
 
-    public static GameManager GManager { get { return gManager; } set { gManager = value; } }
+    public static GameManager GM { get { return gManager; } set { gManager = value; } }
     public static bool StopCam { get { return stopCam; } set { stopCam = value; } }
     public static bool GamePause { get { return gamePause; } set { gamePause = value; } }
 
+/*-----------------------------------------------------------------------------------------------------------------------------------*/
 
     private void Awake()
     {
-        if (gManager == null) { gManager = this; }
-        else { Destroy(gameObject); }
+        // 싱글톤 설정
+        if (gManager == null)
+            gManager = this;
+        else 
+            Destroy(gameObject);
 
         DontDestroyOnLoad(gameObject);
 
+        // 프레임 제한 60 설정
         Application.targetFrameRate = 60;
     }
 
+/*-----------------------------------------------------------------------------------------------------------------------------------*/
 
     // 시작 종료 기능
     public void StartGame()

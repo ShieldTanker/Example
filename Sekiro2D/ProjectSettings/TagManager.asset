@@ -9,6 +9,8 @@ TagManager:
   - Ground
   - Environment
   - Wall
+  - Cusor
+  - FallZone
   layers:
   - Default
   - TransparentFX

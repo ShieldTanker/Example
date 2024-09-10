@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1181090359394091684}
   - component: {fileID: 1181090359394091685}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: LifeBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,7 +99,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1181090359408148787}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: EnemyAttackPoint
   m_TagString: Untagged
   m_Icon: {fileID: 7148428337604731935, guid: 0000000000000000d000000000000000, type: 0}
@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 1181090359695654064}
   - component: {fileID: 1181090359695654071}
   - component: {fileID: 1181090359695654070}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: EnemyHpCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -234,7 +234,7 @@ GameObject:
   - component: {fileID: 1181090359880500432}
   - component: {fileID: 1181090359880500434}
   - component: {fileID: 1181090359880500433}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -310,7 +310,7 @@ GameObject:
   - component: {fileID: 1181090360754719883}
   - component: {fileID: 1181090360754720117}
   - component: {fileID: 1181090360754720116}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -390,6 +390,8 @@ GameObject:
   - component: {fileID: 1181090360780333174}
   - component: {fileID: 1181090360780333173}
   - component: {fileID: 1181090360780333175}
+  - component: {fileID: 4285935578422438579}
+  - component: {fileID: 7520187512503438615}
   m_Layer: 10
   m_Name: WarriorEnemy
   m_TagString: Enemy
@@ -500,38 +502,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86e4117b6fc11d74a9bb33d42aca5309, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wayPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  disForPlayer: 10
   enemyRayPos: {fileID: 1181090360819627213}
-  playerRayPos: {fileID: 0}
-  player: {fileID: 0}
   moveSpeed: 4
-  enemyBattleState: 0
-  enemyAnim: {fileID: 1181090360780334985}
-  hurtSound: {fileID: 8300000, guid: c97bbe4b82f3cb547a111dc3200a0fa3, type: 3}
+  enemyPos: {fileID: 0}
+  player: {fileID: 0}
+  playerRayPos: {fileID: 0}
   atkColl: []
   enemyAtkPoint: {fileID: 1181090359408148787}
-  enemy: {fileID: 1181090360780334984}
   playerLayer:
     serializedVersion: 2
     m_Bits: 2048
   atkBoxSize: {x: 2, y: 2}
-  maxDistance: 5.5
   stopPos: 1.2
-  checkDir: {x: 0, y: 0}
+  maxDistance: 5.5
+  wayPoints:
+  - {fileID: 0}
+  - {fileID: 0}
   atkDamage: 10
-  enemyAtkTime: 2
-  knockBackForce: 5
-  playerKnocBackTime: 0.3
   initAttackDelay: 1
+  knockBackForce: 5
+  knockBackTime: 0.4
   noStiffTime: 0.3
-  FarryDelay: 1.5
   enemyHp: 100
   enemyMaxHp: 100
   hpBar: {fileID: 1181090359394091685}
   hpCanvas: {fileID: 1181090359695654068}
+  enemyBattleState: 0
+  FarryDelay: 1.5
+  isFarryed: 0
 --- !u!70 &1181090360780333174
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -580,7 +578,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -590,9 +588,9 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 15
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 2
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -625,7 +623,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -665,6 +663,39 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &4285935578422438579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1181090360780334984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5672fdf8830d3934cb6fec53753237d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7520187512503438615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1181090360780334984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa0337e5961cd4545aff75c8d142013f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSources:
+  - {fileID: 1181090360780333175}
+  sounds:
+  - {fileID: 8300000, guid: 914f73cbe7448084fa48e78c317c1c2c, type: 3}
+  - {fileID: 8300000, guid: 47e5a84e034fb9f4d83b3c5e4f07742f, type: 3}
+  - {fileID: 8300000, guid: c2a5aaa5161107044ae0807b29f0ff2a, type: 3}
+  - {fileID: 8300000, guid: 48e09a0d746f60d4695684c73a5b1306, type: 3}
+  - {fileID: 8300000, guid: c97bbe4b82f3cb547a111dc3200a0fa3, type: 3}
+  - {fileID: 8300000, guid: fb76138d4018a7c428c976784824a287, type: 3}
 --- !u!1 &1181090360819627212
 GameObject:
   m_ObjectHideFlags: 0
@@ -674,7 +705,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1181090360819627213}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: ERayPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -705,7 +736,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1181090361015209670}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}

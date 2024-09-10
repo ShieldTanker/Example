@@ -6,7 +6,8 @@ public class Boss : MonoBehaviour
 {
     EnemyBattle eB;
     EnemyBattle lastEB;
-    public StageManager sM;
+
+/*-----------------------------------------------------------------------------------------------------------------------------------*/
 
     private void Start()
     {
@@ -20,7 +21,7 @@ public class Boss : MonoBehaviour
 
         if (eB.enemyBattleState == EnemyBattleState.Die)
         {
-            sM.SM.BossClear();
+            UiManager.UIManager.BossClear();
 
             lastEB = eB;
         }

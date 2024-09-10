@@ -15,84 +15,100 @@ public enum EnemyBattleState
 
 public class EnemyBattle : MonoBehaviour
 {
-    // 목적지
-    public Transform[] wayPoints;
-    int pointIdx;
-    public float disForPlayer;
-
+    // 에너미
+    [Space(10)]
     public Transform enemyRayPos;
-    public Transform playerRayPos;
-
+    public float moveSpeed;
+    [Tooltip("에너미 위치")] public Transform enemyPos;
 
     // 플레이어
-    public GameObject player;
-    PlayerBattleState pBState;
-
-    // 본인 오브젝트
-    public float moveSpeed;
-
-   
-
-    public EnemyBattleState enemyBattleState;
-    EnemyBattleState lastEBS;
+    [Space(10)]
+    public PlayerBattle player;
+    public Transform playerRayPos;
+    private PlayerBattleState pBState;
 
     // 애니메이션 관련
-    public Animator enemyAnim;
+    [Space(10)]
+    private Animator eAnim;
 
     //오디오 관련
+    [Space(10)]
     private AudioSource audioSource;
-    public AudioClip hurtSound;
+    private EnemyAudio enemyAudio;
+
+    #region 전투 관련
 
     // 전투 범위 관련
-    public Collider2D[] atkColl;
-    public Transform enemyAtkPoint;
-    public GameObject enemy;
-    public LayerMask playerLayer;
-    public Vector2 atkBoxSize;
-    
-    // 최대감지 거리
-    public float maxDistance;
-    // 현재거리
-    float currentDistance;
-    // 목표와의 거리
-    float waypointDistance;
-    // 정지 거리
-    public float stopPos;
+    [Space(10)]
+    [Tooltip("공격시 감지한 콜라이더들을 담을 배열")] public Collider2D[] atkColl;
+    [Tooltip("에너미의 공격 위치")] public Transform enemyAtkPoint;
+    [Tooltip("감지할 플레이어 레이어")] public LayerMask playerLayer;
+    [Tooltip("공격위치에서 얼마만큼 공격할지 범위")] public Vector2 atkBoxSize;
 
-    public Vector2 checkDir;
-    RaycastHit2D hit;
+    // 목적지
+    [Space(10)]
+    [Tooltip("정지 거리")] public float stopPos;
+    [Tooltip("최대 감지 거리")] public float maxDistance;
+    [Tooltip("현재 거리")] float currentDistance;
+    [Tooltip("목표와 의 거리")] float waypointDistance;
+    [Tooltip("플레이어 와 에너미의 방향 계산")] Vector2 checkDir;
+
+    [Space(10)]
+    public Transform[] wayPoints;
+    private int pointIdx;
 
     // 공격 관련
+    [Space(10)]
     public float atkDamage;
-    public float enemyAtkTime;
-    public float knockBackForce;
-    public float playerKnocBackTime;
 
-    float delayAttack;
-    public float initAttackDelay;
-    public float noStiffTime;
+    [Tooltip("공격 딜레이 시간")] private float delayAttack;
+    [Tooltip("공격 딜레이 시간을 초기화")] public float initAttackDelay;
 
-    // 전투 상태 관련
-    public static bool isFarryed;
-    public float FarryDelay;
+    [Tooltip("넉백을 줄 힘의 크기")] public float knockBackForce;
+    [Tooltip("설정 시간동안 넉백")] public float knockBackTime;
+
+    [Tooltip("경직무효 시간")] public float noStiffTime;
 
     //체력 관련
+    [Space(10)]
     public float enemyHp;
     public float enemyMaxHp;
     public Slider hpBar;
     public GameObject hpCanvas;
 
+    // 전투 상태 관련
+    [Space(10)]
+    [Tooltip("적 전투 상태")] public EnemyBattleState enemyBattleState;
+    [Tooltip("마지막 적 전투 상태")] private EnemyBattleState lastEBS;
+    [Tooltip("패링 당했을시 행동불가 시간")] public float FarryDelay;
+    public bool isFarryed;
+
+    [Tooltip("피격시 실행할 코루틴을 담을 변수")] IEnumerator setStateIdle;
+
+    #endregion
+
+/*-----------------------------------------------------------------------------------------------------------------------------------*/
+
     private void Start()
     {
-        StartSetting();
+        enemyPos = GetComponent<Transform>();
+        audioSource = GetComponent<AudioSource>();
+        enemyAudio = GetComponent<EnemyAudio>();
+
+        playerRayPos = GameObject.Find("PRayPos").transform;
+        player = GameObject.FindWithTag("Player").GetComponent<PlayerBattle>();
+
+        eAnim = GetComponent<Animator>();
+        if (eAnim == null)
+            eAnim = GetComponentInParent<Animator>();
     }
 
     private void Update()
     {
         if (lastEBS == EnemyBattleState.Die)
-        {
             return;
-        }
+        pBState = player.PBState;
+
         TimeCheck();
 
         DistanceCheck();
@@ -104,15 +120,17 @@ public class EnemyBattle : MonoBehaviour
         EnemyBattleAnimUpdate(enemyBattleState);
     }
 
+/*-----------------------------------------------------------------------------------------------------------------------------------*/
+
     public void AttackPlayer()
     {
         Collider2D playerColl = AtkCollider(enemyAtkPoint, atkBoxSize);
 
-        // 콜라이더가 플레이어 태그를 가지고 있을때
+        // 감지된 콜라이더가 플레이어 일때
         if (playerColl != null)
         {
             PlayerBattle pB = playerColl.GetComponent<PlayerBattle>();
-            PlayerBattleState pS = pB.pM.PManager.PlBattleState;
+            PlayerBattleState pS = pB.PBState;
 
             if (pS == PlayerBattleState.Farrying)
             {   // 플레이어가 패링상태일때
@@ -122,16 +140,15 @@ public class EnemyBattle : MonoBehaviour
                 isFarryed = true;
                 delayAttack = FarryDelay;
                 Invoke("FalseFarryed", FarryDelay);
-
             }
             else if (pS == PlayerBattleState.Guard)
             {   // 플레이어가 가드상태일때
-                StartCoroutine(pB.KnockBack(enemy.transform, knockBackForce / 2, playerKnocBackTime));
+                pB.KnockBack(enemyPos, knockBackForce / 2, knockBackTime);
                 pB.Guarded();
             }
             else
             {   // 가드,패링 상태가 아닐때
-                StartCoroutine(pB.KnockBack(enemy.transform, knockBackForce, playerKnocBackTime));
+                pB.KnockBack(enemyPos, knockBackForce, knockBackTime);
                 pB.TakeDamage(atkDamage);
             }
         }
@@ -150,10 +167,7 @@ public class EnemyBattle : MonoBehaviour
 
         foreach (Collider2D col in atkColl)
         {
-            if (col.gameObject.tag == "Player")
-            {
-                playerColl = col;
-            }
+            playerColl = col;
         }
 
         return playerColl;
@@ -164,14 +178,18 @@ public class EnemyBattle : MonoBehaviour
     {
         enemyHp -= damage;
         hpBar.value = enemyHp / enemyMaxHp;
-
-        audioSource.clip = hurtSound;
-        audioSource.Play();
+        
+        enemyAudio.ChangeSound(audioSource, AudioState.HurtSound);
 
         if (enemyHp > 0)
         {   // 피격
             enemyBattleState = EnemyBattleState.Hurt;
-            Invoke("SetStateIdle", noStiffTime);
+
+            if (setStateIdle != null)
+                StopCoroutine(setStateIdle);
+
+            setStateIdle = SetStateIdle(noStiffTime);
+            StartCoroutine(setStateIdle);
         }
         else
         {   // 사망
@@ -179,8 +197,10 @@ public class EnemyBattle : MonoBehaviour
             hpBar.gameObject.SetActive(false);
         }
     }
-    void SetStateIdle()
+
+    IEnumerator SetStateIdle(float noStiffTime)
     {
+        yield return new WaitForSeconds(noStiffTime);
         enemyBattleState = EnemyBattleState.Idle;
     }
 
@@ -191,27 +211,27 @@ public class EnemyBattle : MonoBehaviour
 
         switch (eBS)
         {
-            case EnemyBattleState.Idle:
-                break;
+            // case EnemyBattleState.Idle:
+            // case EnemyBattleState.Guard:
+            //     break;
 
             case EnemyBattleState.Attack:
-                enemyAnim.SetTrigger("EnemyAttack");
-                break;
-
-            case EnemyBattleState.Guard:
+                eAnim.SetTrigger("EnemyAttack");
                 break;
 
             case EnemyBattleState.Farryed:
-                    enemyAnim.SetTrigger("FarryedAttack");
+                eAnim.SetTrigger("FarryedAttack");
                 break;
 
             case EnemyBattleState.Hurt:
-                enemyAnim.SetTrigger("isHurt");
+                eAnim.SetTrigger("isHurt");
+                enemyAudio.ChangeSound(audioSource, AudioState.HurtSound);
                 break;
 
             case EnemyBattleState.Die:
-                enemyAnim.SetTrigger("isDie");
-                enemyAnim.SetBool("enemyDied",true);
+                eAnim.SetTrigger("isDie");
+                eAnim.SetBool("enemyDied", true);
+                enemyAudio.ChangeSound(audioSource, AudioState.DieSound);
                 break;
 
             default:
@@ -221,20 +241,6 @@ public class EnemyBattle : MonoBehaviour
         lastEBS = eBS;
     }
 
-    void StartSetting()
-    {
-        audioSource = GetComponent<AudioSource>();
-        audioSource.volume = PlayerPrefs.GetFloat("Volume");
-
-        playerRayPos = GameObject.Find("PRayPos").transform;
-        player = GameObject.FindWithTag("Player");
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(enemyAtkPoint.position, atkBoxSize);
-    }
 
     // 타이머
     void TimeCheck()
@@ -246,10 +252,10 @@ public class EnemyBattle : MonoBehaviour
     {
         if (pBState != PlayerBattleState.Die)
         {
-            if (currentDistance <= 1.8 && enemyAnim.GetBool("PlayerCheck") &&
-                delayAttack <= 0 && !EnemyBattle.isFarryed && enemyBattleState != EnemyBattleState.Die)
+            if (currentDistance <= 1.8 && eAnim.GetBool("PlayerCheck") &&
+                delayAttack <= 0 && !isFarryed && enemyBattleState != EnemyBattleState.Die)
             {
-                enemyAnim.SetTrigger("EnemyAttack");
+                eAnim.SetTrigger("EnemyAttack");
                 delayAttack = initAttackDelay;
             }
         }
@@ -265,51 +271,60 @@ public class EnemyBattle : MonoBehaviour
             Vector3 checkRay = maxDistance * checkDir.normalized;
             Debug.DrawRay(enemyRayPos.position, checkRay, Color.red);
 
-            hit = Physics2D.Raycast(enemyRayPos.position, checkDir, maxDistance, playerLayer);
+            RaycastHit2D hit = Physics2D.Raycast(enemyRayPos.position, checkDir, maxDistance, playerLayer);
             if (hit.collider != null)
             {
                 if (hit.collider.gameObject.tag == "Player")
-                    enemyAnim.SetBool("PlayerCheck", true);
+                    eAnim.SetBool("PlayerCheck", true);
                 else
-                    enemyAnim.SetBool("PlayerCheck", false);
+                    eAnim.SetBool("PlayerCheck", false);
             }
             else
-                enemyAnim.SetBool("PlayerCheck", false);
+                eAnim.SetBool("PlayerCheck", false);
         }
         else
         {
-            enemyAnim.SetBool("playerDie", true);
+            eAnim.SetBool("playerDie", true);
         }
     }
+
+    // 거리 계산
     void DistanceCheck()
     {
+        // 플레이어 와 자신의 거리를 계산하여 FSM 거리계산에 사용
         currentDistance = Vector2.Distance(player.transform.position, transform.position);
-        enemyAnim.SetFloat("playerChkDis", currentDistance);
+        eAnim.SetFloat("playerChkDis", currentDistance);
 
+        // 목적지와 자신의 거리를 계산하여 FSM 거리계산에 사용
         waypointDistance = Vector2.Distance(transform.position, wayPoints[pointIdx].position);
-        enemyAnim.SetFloat("distanceForPoint", waypointDistance);
+        eAnim.SetFloat("distanceForPoint", waypointDistance);
     }
 
-    // 이동
-    public void GoToWayPoint()
-    {
-        transform.position = Vector3.MoveTowards(transform.position, wayPoints[pointIdx].position, moveSpeed * Time.deltaTime);
-        CalcVec(wayPoints[pointIdx]);
-    }
+    // 목표로 이동
     public void GoToTarget()
     {
         if (pBState != PlayerBattleState.Die)
         {
-            CalcVec(player.transform);
+            LookAHead(player.transform);
 
             Vector3 dir = player.transform.position;
 
             if (currentDistance >= stopPos)
-            {
-                transform.position = Vector3.MoveTowards(transform.position, dir, moveSpeed * Time.deltaTime);
-            }
+                transform.position =
+                    Vector3.MoveTowards(transform.position,
+                                        dir,
+                                        moveSpeed * Time.deltaTime);
         }
     }
+
+    // 목적지로 이동
+    public void GoToWayPoint()
+    {
+        transform.position = Vector3.MoveTowards(transform.position, wayPoints[pointIdx].position, moveSpeed * Time.deltaTime);
+        LookAHead(wayPoints[pointIdx]);
+    }
+
+    // 목적지 재설정
     public void WayPointSet()
     {
         switch (pointIdx)
@@ -325,14 +340,22 @@ public class EnemyBattle : MonoBehaviour
         }
     }
 
-    // 방향 계산
-    void CalcVec(Transform vecWay)
+    /// <summary>
+    /// 매개변수의 위치 방향으로 회전
+    /// </summary>
+    /// <param name="pos">목표의 위치</param>
+    public void LookAHead(Transform pos)
     {
-        float vecX = vecWay.position.x - transform.position.x;
+        float dir = pos.position.x - transform.position.x;
 
-        if (vecX > 1)
+        if (dir > 0)
             transform.localScale = new Vector3(1, 1, 1);
-        else if (vecX < 0)
+        else if (dir < 0)
             transform.localScale = new Vector3(-1, 1, 1);
+    }
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(enemyAtkPoint.position, atkBoxSize);
     }
 }

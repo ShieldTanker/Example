@@ -4,35 +4,46 @@ using UnityEngine;
 
 public class BossCleared : MonoBehaviour
 {
+    [Tooltip("상호작용 키")]
     public GameObject actionKeyText;
+
+    [Tooltip("UI 활성화 되어있는지")]
+    bool isActive;
+    [Tooltip("보스 처치시 나오는 화톳불 안에 있는지 확인")]
+    bool inBossClear;
     
-    //public bool isActive;
-    
-    public PlayerBattle playerBattle;
+    [SerializeField] PlayerBattle playerBattle;
 
     public GameObject gotoTitleBtn;
     public GameObject exitBtn;
 
+/*-----------------------------------------------------------------------------------------------------------------------------------*/
+
     private void Start()
     {
-        playerBattle = GameObject.Find("Player").GetComponent<PlayerBattle>();
+        playerBattle = GameObject.FindWithTag("Player").GetComponent<PlayerBattle>();
+        isActive = true;
     }
 
     private void Update()
     {
-        if (GameManager.StopCam)
+        if (inBossClear)
         {
             if (Input.GetKeyDown(KeyCode.F))
             {
-                gotoTitleBtn.SetActive(true);
-                exitBtn.SetActive(true);
-                actionKeyText.SetActive(false);
+                gotoTitleBtn.SetActive(isActive);
+                exitBtn.SetActive(isActive);
+                GameManager.StopCam = isActive;
+                actionKeyText.SetActive(!isActive);
 
-                playerBattle.playerHp = playerBattle.playerMaxHP;
+                playerBattle.Hp = playerBattle.maxHp;
                 playerBattle.ChangeHpBarValue();
+                isActive = !isActive;
             }
         }
     }
+
+/*-----------------------------------------------------------------------------------------------------------------------------------*/
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -40,7 +51,7 @@ public class BossCleared : MonoBehaviour
         {
             Debug.Log("player");
             actionKeyText.SetActive(true);
-            GameManager.StopCam = true;
+            inBossClear = true;
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
@@ -54,6 +65,8 @@ public class BossCleared : MonoBehaviour
             exitBtn.SetActive(false);
 
             GameManager.StopCam = false;
+            isActive = true;
+            inBossClear =false;
         }
     }
 }
