@@ -19,7 +19,7 @@ public class EnemyBattle : MonoBehaviour
     [Space(10)]
     public Transform enemyRayPos;
     public float moveSpeed;
-    [Tooltip("에너미 위치")] public Transform enemyPos;
+    [Tooltip("에너미 위치")] private Transform enemyPos;
 
     // 플레이어
     [Space(10)]
@@ -40,7 +40,7 @@ public class EnemyBattle : MonoBehaviour
 
     // 전투 범위 관련
     [Space(10)]
-    [Tooltip("공격시 감지한 콜라이더들을 담을 배열")] public Collider2D[] atkColl;
+    [Tooltip("공격시 감지한 콜라이더들을 담을 배열")] private Collider2D[] atkColl;
     [Tooltip("에너미의 공격 위치")] public Transform enemyAtkPoint;
     [Tooltip("감지할 플레이어 레이어")] public LayerMask playerLayer;
     [Tooltip("공격위치에서 얼마만큼 공격할지 범위")] public Vector2 atkBoxSize;
@@ -54,7 +54,7 @@ public class EnemyBattle : MonoBehaviour
     [Tooltip("플레이어 와 에너미의 방향 계산")] Vector2 checkDir;
 
     [Space(10)]
-    public Transform[] wayPoints;
+    [Tooltip("순찰할 위치")]public Transform[] wayPoints;
     private int pointIdx;
 
     // 공격 관련
@@ -122,6 +122,48 @@ public class EnemyBattle : MonoBehaviour
 
 /*-----------------------------------------------------------------------------------------------------------------------------------*/
 
+    /// <summary>
+    /// 상태에 따른 애니메이션 변경
+    /// </summary>
+    /// <param name="eBS"></param>
+    void EnemyBattleAnimUpdate(EnemyBattleState eBS)
+    {
+        if (lastEBS == eBS)
+            return;
+
+        switch (eBS)
+        {
+            // case EnemyBattleState.Idle:
+            // case EnemyBattleState.Guard:
+            //     break;
+
+            case EnemyBattleState.Attack:
+                eAnim.SetTrigger("EnemyAttack");
+                break;
+
+            case EnemyBattleState.Farryed:
+                eAnim.SetTrigger("FarryedAttack");
+                break;
+
+            case EnemyBattleState.Hurt:
+                eAnim.SetTrigger("isHurt");
+                enemyAudio.ChangeSound(audioSource, AudioState.HurtSound);
+                break;
+
+            case EnemyBattleState.Die:
+                eAnim.SetTrigger("isDie");
+                eAnim.SetBool("enemyDied", true);
+                enemyAudio.ChangeSound(audioSource, AudioState.DieSound);
+                break;
+
+            default:
+                break;
+        }
+
+        lastEBS = eBS;
+    }
+
+    #region 전투 관련 함수들
     public void AttackPlayer()
     {
         Collider2D playerColl = AtkCollider(enemyAtkPoint, atkBoxSize);
@@ -198,47 +240,15 @@ public class EnemyBattle : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 피격후 설정 시간이후 정상상태로 변경
+    /// </summary>
+    /// <param name="noStiffTime"></param>
+    /// <returns></returns>
     IEnumerator SetStateIdle(float noStiffTime)
     {
         yield return new WaitForSeconds(noStiffTime);
         enemyBattleState = EnemyBattleState.Idle;
-    }
-
-    void EnemyBattleAnimUpdate(EnemyBattleState eBS)
-    {
-        if (lastEBS == eBS)
-            return;
-
-        switch (eBS)
-        {
-            // case EnemyBattleState.Idle:
-            // case EnemyBattleState.Guard:
-            //     break;
-
-            case EnemyBattleState.Attack:
-                eAnim.SetTrigger("EnemyAttack");
-                break;
-
-            case EnemyBattleState.Farryed:
-                eAnim.SetTrigger("FarryedAttack");
-                break;
-
-            case EnemyBattleState.Hurt:
-                eAnim.SetTrigger("isHurt");
-                enemyAudio.ChangeSound(audioSource, AudioState.HurtSound);
-                break;
-
-            case EnemyBattleState.Die:
-                eAnim.SetTrigger("isDie");
-                eAnim.SetBool("enemyDied", true);
-                enemyAudio.ChangeSound(audioSource, AudioState.DieSound);
-                break;
-
-            default:
-                break;
-        }
-
-        lastEBS = eBS;
     }
 
 
@@ -260,6 +270,10 @@ public class EnemyBattle : MonoBehaviour
             }
         }
     }
+
+    #endregion
+
+    #region 순찰 및 추격 관련
 
     // 체크
     void CheckPlayer()
@@ -340,10 +354,13 @@ public class EnemyBattle : MonoBehaviour
         }
     }
 
+    #endregion
+
     /// <summary>
     /// 매개변수의 위치 방향으로 회전
     /// </summary>
     /// <param name="pos">목표의 위치</param>
+
     public void LookAHead(Transform pos)
     {
         float dir = pos.position.x - transform.position.x;
@@ -353,6 +370,7 @@ public class EnemyBattle : MonoBehaviour
         else if (dir < 0)
             transform.localScale = new Vector3(-1, 1, 1);
     }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
